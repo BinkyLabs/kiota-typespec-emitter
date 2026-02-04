@@ -4,16 +4,16 @@ import {
   createTestWrapper,
   expectDiagnosticEmpty,
 } from "@typespec/compiler/testing";
-import { BinkylabsX2FKiotaTypespecEmitterTestLibrary } from "../src/testing/index.js";
+import { BinkylabsKiotaTypespecEmitterTestLibrary } from "../src/testing/index.js";
 
-export async function createBinkylabsX2FKiotaTypespecEmitterTestHost() {
+export async function createBinkylabsKiotaTypespecEmitterTestHost() {
   return createTestHost({
-    libraries: [BinkylabsX2FKiotaTypespecEmitterTestLibrary],
+    libraries: [BinkylabsKiotaTypespecEmitterTestLibrary],
   });
 }
 
-export async function createBinkylabsX2FKiotaTypespecEmitterTestRunner() {
-  const host = await createBinkylabsX2FKiotaTypespecEmitterTestHost();
+export async function createBinkylabsKiotaTypespecEmitterTestRunner() {
+  const host = await createBinkylabsKiotaTypespecEmitterTestHost();
 
   return createTestWrapper(host, {
     compilerOptions: {
@@ -26,7 +26,7 @@ export async function createBinkylabsX2FKiotaTypespecEmitterTestRunner() {
 export async function emitWithDiagnostics(
   code: string
 ): Promise<[Record<string, string>, readonly Diagnostic[]]> {
-  const runner = await createBinkylabsX2FKiotaTypespecEmitterTestRunner();
+  const runner = await createBinkylabsKiotaTypespecEmitterTestRunner();
   await runner.compileAndDiagnose(code, {
     outputDir: "tsp-output",
   });
