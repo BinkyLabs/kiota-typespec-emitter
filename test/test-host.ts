@@ -18,7 +18,7 @@ export async function createBinkylabsX2FKiotaTypespecEmitterTestRunner() {
   return createTestWrapper(host, {
     compilerOptions: {
       noEmit: false,
-      emit: ["@binkylabs&#x2F;kiota-typespec-emitter"],
+      emit: ["@binkylabs/kiota-typespec-emitter"],
     },
   });
 }
@@ -30,7 +30,7 @@ export async function emitWithDiagnostics(
   await runner.compileAndDiagnose(code, {
     outputDir: "tsp-output",
   });
-  const emitterOutputDir = "./tsp-output/@binkylabs&#x2F;kiota-typespec-emitter";
+  const emitterOutputDir = "./tsp-output/@binkylabs/kiota-typespec-emitter";
   const files = await runner.program.host.readDir(emitterOutputDir);
 
   const result: Record<string, string> = {};
