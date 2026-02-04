@@ -20,10 +20,10 @@
     "@types/node": "latest",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
-    "eslint": "^9.15.0",
     "@typespec/compiler": "latest",
-    "typescript": "^5.3.3",
-    "prettier": "^3.3.3"
+    "eslint": "^9.15.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "build": "tsc",
@@ -35,5 +35,9 @@
     "format:check": "prettier --check ."
   },
   "private": true,
-  "packageManager": "npm@11.8.0+sha512.9f5f6c25e5be44629d907a3c482739c614b090a8505057d9685cd273e12c6172e34aa215d2d97bd9a0d8415bb356f7eb6f2b06c1d690b0d2cdcb9f09d7410149"
+  "packageManager": "npm@11.8.0+sha512.9f5f6c25e5be44629d907a3c482739c614b090a8505057d9685cd273e12c6172e34aa215d2d97bd9a0d8415bb356f7eb6f2b06c1d690b0d2cdcb9f09d7410149",
+  "dependencies": {
+    "@microsoft/kiota": "^1.30.0",
+    "@typespec/openapi3": "^1.8.0"
+  }
 }
