@@ -1,9 +1,16 @@
 import { EmitContext, emitFile, resolvePath } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
-// import { ConsumerOperation, generateClient, KiotaGenerationLanguage } from "@microsoft/kiota";
-import { ConsumerOperation, generateClient, KiotaGenerationLanguage } from "./kiota/index.js";
+// import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "@microsoft/kiota";
+import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "./kiota/index.js";
 
-export async function $onEmit(context: EmitContext) {
+export interface ClientOptions extends Exclude<ClientGenerationOptions, "openApiFilePath" | "operation" | "workingDirectory" | "language"> {
+
+}
+export interface KiotaEmitterOptions {
+  clients: Record<KiotaGenerationLanguage, Partial<ClientOptions>>;
+}
+
+export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   await emitFile(context.program, {
     path: resolvePath(context.emitterOutputDir, "output.txt"),
     content: "Hello world\n",
@@ -19,19 +26,26 @@ export async function $onEmit(context: EmitContext) {
   });
 
   // check that the file was created
+  // TODO we need to iterate over the namespaces if multiple OpenApi documents are emitted
   const openApiFilePath = resolvePath(context.emitterOutputDir, "openapi.json");
   const openApiFile = await context.program.host.readFile(openApiFilePath);
   if (!openApiFile) {
     throw new Error("OpenAPI file was not emitted, check the logs for errors.");
   }
 
-  await generateClient({
-    openAPIFilePath: openApiFilePath,
-    outputPath: resolvePath(context.emitterOutputDir, "kiota-client"),
-    clientClassName: "KiotaClient",
-    language: KiotaGenerationLanguage.CSharp,
-    clientNamespaceName: "KiotaGeneratedClient",
-    operation: ConsumerOperation.Generate,
-    workingDirectory: context.emitterOutputDir,
+  const languages = Object.keys(context.options.clients).map(lang => parseGenerationLanguage(lang));
+
+  languages.forEach(async clientLanguage => {
+    const languageOptions = context.options.clients[clientLanguage];
+    await generateClient({
+      ...languageOptions,
+      openAPIFilePath: openApiFilePath,
+      outputPath: languageOptions.outputPath ?? resolvePath(context.emitterOutputDir, "kiota-client"),
+      operation: ConsumerOperation.Generate,
+      workingDirectory: context.emitterOutputDir,
+      clientClassName: languageOptions.clientClassName ?? "ApiClient",
+      clientNamespaceName: languageOptions.clientNamespaceName ?? "ApiClientNamespace",
+      language: clientLanguage,
+    });
   });
 }

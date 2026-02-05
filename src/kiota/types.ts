@@ -167,6 +167,33 @@ export function generationLanguageToString(
   }
 }
 
+export function parseGenerationLanguage(
+  language: string
+): KiotaGenerationLanguage {
+  switch (language.toLowerCase()) {
+    case "csharp":
+      return KiotaGenerationLanguage.CSharp;
+    case "java":
+      return KiotaGenerationLanguage.Java;
+    case "typescript":
+      return KiotaGenerationLanguage.TypeScript;
+    case "php":
+      return KiotaGenerationLanguage.PHP;
+    case "python":
+      return KiotaGenerationLanguage.Python;
+    case "go":
+      return KiotaGenerationLanguage.Go;
+    case "ruby":
+      return KiotaGenerationLanguage.Ruby;
+    case "dart":
+      return KiotaGenerationLanguage.Dart;
+    case "http":
+      return KiotaGenerationLanguage.HTTP;
+    default:
+      throw new Error(`unknown language: ${language}`);
+  };
+}
+
 export const allGenerationLanguages = [
   KiotaGenerationLanguage.CSharp,
   KiotaGenerationLanguage.Go,
