@@ -1,4 +1,4 @@
-import { EmitContext, emitFile, resolvePath } from "@typespec/compiler";
+import { EmitContext, NoTarget, resolvePath } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
 // import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "@microsoft/kiota";
 import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "./kiota/index.js";
@@ -11,10 +11,26 @@ export interface KiotaEmitterOptions {
 }
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
-  await emitFile(context.program, {
-    path: resolvePath(context.emitterOutputDir, "output.txt"),
-    content: "Hello world\n",
-  });
+  if (!context.options) {
+    // log an error diagnostic
+    context.program.reportDiagnostic({
+      code: "kiota-emitter-missing-options",
+      message: "Kiota Emitter options are missing. No clients will be generated.",
+      target: NoTarget,
+      severity: "error",
+    });
+    return;
+  }
+  if (!context.options.clients || Object.keys(context.options.clients).length === 0) {
+    // log an error diagnostic
+    context.program.reportDiagnostic({
+      code: "kiota-emitter-no-clients",
+      message: "No clients configured for generation in Kiota Emitter options.",
+      target: NoTarget,
+      severity: "error",
+    });
+    return;
+  }
   // create the directory if it doesn't exist
   await openApiOnEmit({
     ...context,

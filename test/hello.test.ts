@@ -1,56 +1,60 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { emit } from "./test-host.js";
+import { emit, emitWithDiagnostics } from "./test-host.js";
+
+const baseServiceDefinition = 
+`
+  import "@typespec/http";
+
+  using Http;
+  @service(#{ title: "Widget Service" })
+  namespace DemoService;
+
+  model Widget {
+    @visibility(Lifecycle.Read)
+    id: string;
+
+    weight: int32;
+    color: "red" | "blue";
+  }
+
+  @error
+  model Error {
+    code: int32;
+    message: string;
+  }
+
+  @route("/widgets")
+  @tag("Widgets")
+  interface Widgets {
+    /** List widgets */
+    @get list(): Widget[] | Error;
+
+    /** Read widgets */
+    @get read(@path id: Widget.id): Widget | Error;
+
+    /** Create a widget */
+    @post create(@body widget: Widget): Widget | Error;
+
+    /** Update a widget */
+    @patch update(@path id: Widget.id, @body widget: MergePatchUpdate<Widget>): Widget | Error;
+
+    /** Delete a widget */
+    @delete delete(@path id: Widget.id): void | Error;
+    /** Analyze a widget */
+    @route("{id}/analyze") @post analyze(@path id: Widget.id): string | Error;
+  }
+
+`;
 
 describe("hello", () => {
-  it("emit output.txt with content hello world", async () => {
-    const results = await emit(`op test(): void;`);
-    strictEqual(results["output.txt"], "Hello world\n");
+  it("logs an error if no clients are configured", async () => {
+    const [, diagnostics] = await emitWithDiagnostics(baseServiceDefinition);
+    strictEqual(diagnostics.length, 1);
+    strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
   });
   it("emit openapi.json", async () => {
-    const results = await emit(`
-      import "@typespec/http";
-
-      using Http;
-      @service(#{ title: "Widget Service" })
-      namespace DemoService;
-
-      model Widget {
-        @visibility(Lifecycle.Read)
-        id: string;
-
-        weight: int32;
-        color: "red" | "blue";
-      }
-
-      @error
-      model Error {
-        code: int32;
-        message: string;
-      }
-
-      @route("/widgets")
-      @tag("Widgets")
-      interface Widgets {
-        /** List widgets */
-        @get list(): Widget[] | Error;
-
-        /** Read widgets */
-        @get read(@path id: Widget.id): Widget | Error;
-
-        /** Create a widget */
-        @post create(@body widget: Widget): Widget | Error;
-
-        /** Update a widget */
-        @patch update(@path id: Widget.id, @body widget: MergePatchUpdate<Widget>): Widget | Error;
-
-        /** Delete a widget */
-        @delete delete(@path id: Widget.id): void | Error;
-        /** Analyze a widget */
-        @route("{id}/analyze") @post analyze(@path id: Widget.id): string | Error;
-      }
-
-    `);
+    const results = await emit(baseServiceDefinition);
     const openApiDescription = JSON.parse(results["openapi.json"]);
     strictEqual(openApiDescription.openapi, "3.2.0");
   });
