@@ -1,12 +1,12 @@
 import { EmitContext, NoTarget, resolvePath, DiagnosticSeverity } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
-import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage, LogLevel } from "./kiota/index.js";
+import { ConsumerOperation, ClientGenerationOptions, generateClient, parseGenerationLanguage, LogLevel } from "./kiota/index.js";
 
 export interface ClientOptions extends Exclude<ClientGenerationOptions, "openApiFilePath" | "operation" | "workingDirectory" | "language"> {
 
 }
 export interface KiotaEmitterOptions {
-  clients: Record<KiotaGenerationLanguage, Partial<ClientOptions>>;
+  clients: Record<string, Partial<ClientOptions>>;
 }
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
@@ -48,10 +48,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     throw new Error("OpenAPI file was not emitted, check the logs for errors.");
   }
 
-  const languages = Object.keys(context.options.clients).map(lang => parseGenerationLanguage(lang));
-
-  languages.forEach(async clientLanguage => {
-    const languageOptions = context.options.clients[clientLanguage];
+  await Promise.all(Object.entries(context.options.clients).map(async ([clientLanguage, languageOptions]) => {
     const result = await generateClient({
       ...languageOptions,
       openAPIFilePath: openApiFilePath,
@@ -60,7 +57,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       workingDirectory: context.emitterOutputDir,
       clientClassName: languageOptions.clientClassName ?? "ApiClient",
       clientNamespaceName: languageOptions.clientNamespaceName ?? "ApiClientNamespace",
-      language: clientLanguage,
+      language: parseGenerationLanguage(clientLanguage),
     });
     if (!result?.isSuccess) {
       context.program.reportDiagnostic({
@@ -80,7 +77,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
         severity: mapKiotaLogLevelToDiagnosticSeverity(logEntry.level as LogLevel.error | LogLevel.warning),
       });
     });
-  });
+  }));
 }
 
 function mapKiotaLogLevelToDiagnosticSeverity(level: LogLevel.error | LogLevel.warning): DiagnosticSeverity {
