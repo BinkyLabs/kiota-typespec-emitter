@@ -46,7 +46,7 @@ jobs:
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -63,3 +63,7 @@ jobs:
       - run: npm install npm@11 -g # Use npm@11 to publish with OIDC
       - name: Publish package on NPM
         run: npm publish *.tgz --access public --provenance --workspaces
+      - name: Upload the tarball to the release
+        run: gh release upload ${{ github.ref_name }} *.tgz --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
