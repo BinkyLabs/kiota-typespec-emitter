@@ -11,6 +11,7 @@ const baseServiceDefinition =
 
   using Http;
   @service(#{ title: "Widget Service" })
+  @server("https://localhost:8989")
   namespace DemoService;
 
   model Widget {
@@ -60,6 +61,7 @@ describe("hello", () => {
   const tmpTspFileName = "temp-service.tsp";
   const tmpDirectory = "test-output";
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
+  const openApiFilePath = path.join(tmpDirectory, "@binkylabs", "kiota-typespec-emitter", "openapi.json");
   before(async () => {
     await fs.mkdir(tmpDirectory, { recursive: true });
     await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
@@ -82,9 +84,9 @@ describe("hello", () => {
       outputDir: tmpDirectory,
     });
     const diagnostics = program.diagnostics;
-    const resultingOpenApiDescription = await program.host.readFile("@typespec/openapi3/openapi.json");
+    const resultingOpenApiDescription = await fs.readFile(openApiFilePath, "utf-8");
     strictEqual(!!resultingOpenApiDescription, true, "Expected openapi.json to be emitted.");
-    const openApiDescription = JSON.parse(resultingOpenApiDescription.text);
+    const openApiDescription = JSON.parse(resultingOpenApiDescription);
     strictEqual(openApiDescription.openapi, "3.2.0");
 
     const kiotaLogs = diagnostics.filter(d => d.code === "kiota-emitter-log");
