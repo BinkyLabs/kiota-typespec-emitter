@@ -34,3 +34,5 @@ options:
 ```
 
 You MAY emit up to one client per definition per language. The options are the same as the [generate command](https://learn.microsoft.com/openapi/kiota/using#client-generation) (except for the OpenAPI description and the log level which are provided automatically). After generating the client code, you'll need to add the required dependencies [more information](https://learn.microsoft.com/openapi/kiota/quickstarts/).
+
+> Important! This emitter downloads the kiota binaries (~40MB) upon first run, make sure you're connected to internet.
