@@ -1,4 +1,9 @@
 {
+  "packages": {
+    ".": {
+      "package-name": "@binkylabs/kiota-typespec-emitter"
+    }
+  },
   "bootstrap-sha": "a9fb109c31c6585cf194da18895a09368f7d1543",
   "exclude-paths": [".github", ".vs", ".vscode"],
   "release-type": "node",
