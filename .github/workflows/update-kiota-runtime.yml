@@ -2,8 +2,8 @@ name: Update Kiota Runtime
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight UTC
-  workflow_dispatch:  # Allow manual trigger
+    - cron: "0 0 * * *" # Run daily at midnight UTC
+  workflow_dispatch: # Allow manual trigger
 
 permissions:
   contents: write
@@ -41,20 +41,20 @@ jobs:
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           # Create and switch to new branch
           $branch = "update-kiota-runtime-$(Get-Date -Format 'yyyy-MM-dd-HHmmss')"
           git checkout -b $branch
-          
+
           # Stage and commit only runtime.json
           git add src/kiota/runtime.json
           git commit -m "feat(emitter): updates kiota version"
-          
+
           # Push the branch
           git push origin $branch
-          
+
           # Create pull request and capture the URL
           $prUrl = gh pr create --title "feat(emitter): updates kiota version" --body "Automated update of Kiota runtime dependencies" --base main --head $branch
-          
+
           # Enable auto-merge on the created PR
           gh pr merge $prUrl --auto --merge -d
