@@ -5,10 +5,11 @@ import {
   expectDiagnosticEmpty,
 } from "@typespec/compiler/testing";
 import { BinkylabsKiotaTypespecEmitterTestLibrary } from "../src/testing/index.js";
+import { HttpTestLibrary } from "@typespec/http/testing";
 
 export async function createBinkylabsKiotaTypespecEmitterTestHost() {
   return createTestHost({
-    libraries: [BinkylabsKiotaTypespecEmitterTestLibrary],
+    libraries: [HttpTestLibrary, BinkylabsKiotaTypespecEmitterTestLibrary],
   });
 }
 
