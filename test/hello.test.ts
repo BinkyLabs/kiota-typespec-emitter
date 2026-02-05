@@ -73,6 +73,9 @@ describe("hello", () => {
     strictEqual(openApiDescription.openapi, "3.2.0");
 
     const kiotaLogs = diagnostics.filter(d => d.code === "kiota-emitter-log");
-    deepEqual(kiotaLogs, []);
+    deepEqual(kiotaLogs, [], "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs));
+
+    const errorLogs = diagnostics.filter(d => d.code === "kiota-emitter-generation-failed");
+    deepEqual(errorLogs, [], "Expected no Kiota generation errors, but got: " + JSON.stringify(errorLogs));
   });
 });
