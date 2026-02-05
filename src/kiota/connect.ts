@@ -1,12 +1,14 @@
 import * as cp from 'node:child_process';
 import * as rpc from 'vscode-jsonrpc/node';
 import { ensureKiotaIsPresent, getKiotaPath } from './install.js';
+import path from 'node:path';
+import fs from 'node:fs';
 
 
 // copied fom JSON RPC because they are missing a file in the package?
 class ReadableStreamWrapper implements rpc.RAL.ReadableStream {
 
-	constructor(private stream: NodeJS.ReadableStream) {
+	constructor(private readonly stream: NodeJS.ReadableStream) {
 	}
 
 	public onClose(listener: () => void): rpc.Disposable {
@@ -32,7 +34,7 @@ class ReadableStreamWrapper implements rpc.RAL.ReadableStream {
 
 class WritableStreamWrapper implements rpc.RAL.WritableStream {
 
-	constructor(private stream: NodeJS.WritableStream) {
+	constructor(private readonly stream: NodeJS.WritableStream) {
 	}
 
 	public onClose(listener: () => void): rpc.Disposable {
@@ -75,10 +77,16 @@ class WritableStreamWrapper implements rpc.RAL.WritableStream {
 // end of copy
 
 export default async function connectToKiota<T>(callback: (connection: rpc.MessageConnection) => Promise<T | undefined>, workingDirectory: string = process.cwd()): Promise<T | undefined | Error> {
+  // Convert workingDirectory to an absolute path
+  const absoluteWorkingDirectory = path.resolve(workingDirectory);
+  // Create the directory if it doesn't exist
+  await fs.promises.mkdir(absoluteWorkingDirectory, { recursive: true });
+  
   const kiotaPath = getKiotaPath();
   await ensureKiotaIsPresent();
+  
   const childProcess = cp.spawn(kiotaPath, ["rpc"], {
-    cwd: workingDirectory,
+    cwd: absoluteWorkingDirectory,
     env: {
       ...process.env,
       // eslint-disable-next-line @typescript-eslint/naming-convention
