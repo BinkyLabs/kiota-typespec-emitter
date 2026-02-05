@@ -28,11 +28,12 @@ export interface KiotaEmitterOptions {
  * but we want to output to "tsp-output" directly.
  */
 function getRootOutputFolder(emitterDir: string): string {
-  // Navigate up two levels: from @scope/package to root
-  // or one level if no scope
   const parentDir = dirname(emitterDir);
-  const isScoped = dirname(parentDir) !== parentDir && parentDir.includes("@");
-  return isScoped ? dirname(parentDir) : parentDir;
+  const grandparentDir = dirname(parentDir);
+  // Check if parent directory is a scoped package (starts with @)
+  const parentBasename = parentDir.substring(parentDir.lastIndexOf("/") + 1);
+  const isScoped = parentBasename.startsWith("@");
+  return isScoped ? grandparentDir : parentDir;
 }
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {

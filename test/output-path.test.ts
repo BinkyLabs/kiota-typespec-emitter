@@ -92,8 +92,8 @@ describe("output path handling", () => {
   });
 
   it("should output client to configured outputPath without package name", async () => {
-    const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName + ".2");
-    await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
+    const tmpTspFilePath2 = path.join(tmpDirectory, tmpTspFileName + ".2");
+    await fs.writeFile(tmpTspFilePath2, baseServiceDefinition);
 
     // The client should be at tsp-output/kiota-clients/generated, not tsp-output/@binkylabs/kiota-typespec-emitter/kiota-clients/generated
     const expectedClientFilePath = path.join(
@@ -103,7 +103,7 @@ describe("output path handling", () => {
       "WidgetClient.cs",
     );
 
-    await compile(NodeHost, tmpTspFilePath, {
+    await compile(NodeHost, tmpTspFilePath2, {
       options: {
         "@binkylabs/kiota-typespec-emitter": {
           clients: {

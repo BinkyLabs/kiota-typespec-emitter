@@ -7,8 +7,11 @@ import { dirname } from "node:path";
  */
 function getRootOutputFolder(emitterDir: string): string {
   const parentDir = dirname(emitterDir);
-  const isScoped = dirname(parentDir) !== parentDir && parentDir.includes("@");
-  return isScoped ? dirname(parentDir) : parentDir;
+  const grandparentDir = dirname(parentDir);
+  // Check if parent directory is a scoped package (starts with @)
+  const parentBasename = parentDir.substring(parentDir.lastIndexOf("/") + 1);
+  const isScoped = parentBasename.startsWith("@");
+  return isScoped ? grandparentDir : parentDir;
 }
 
 describe("getRootOutputFolder", () => {
