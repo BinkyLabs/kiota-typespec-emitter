@@ -1,30 +1,28 @@
 export enum KiotaGenerationLanguage {
-   
   CSharp = 0,
-   
+
   Java = 1,
-   
+
   TypeScript = 2,
-   
+
   PHP = 3,
-   
+
   Python = 4,
-   
+
   Go = 5,
-   
+
   Ruby = 6,
-   
+
   Dart = 7,
-   
+
   HTTP = 8,
 }
 
 export enum KiotaPluginType {
-   
   OpenAI = 0,
-   
+
   ApiManifest = 1,
-   
+
   ApiPlugin = 2,
 }
 
@@ -80,8 +78,7 @@ export interface KiotaShowConfiguration extends CacheClearableConfiguration {
   includeKiotaValidationRules: boolean;
 }
 
-export interface KiotaGetManifestDetailsConfiguration
-  extends CacheClearableConfiguration {
+export interface KiotaGetManifestDetailsConfiguration extends CacheClearableConfiguration {
   manifestPath: string;
   apiIdentifier: string;
 }
@@ -91,11 +88,10 @@ export interface KiotaLoggedResult {
 }
 
 export enum OpenApiSpecVersion {
-   
   V2_0 = 0,
-   
+
   V3_0 = 1,
-   
+
   V3_1 = 2,
 }
 
@@ -117,31 +113,29 @@ export interface KiotaSearchResult extends KiotaLoggedResult {
   results: Record<string, KiotaSearchResultItem>;
 }
 export interface KiotaSearchResultItem {
-   
   Title: string;
-   
+
   Description: string;
-   
+
   ServiceUrl?: string;
-   
+
   DescriptionUrl?: string;
-   
+
   VersionLabels?: string[];
 }
 
 export enum ConsumerOperation {
-   
   Add,
-   
+
   Edit,
-   
+
   Remove,
-   
+
   Generate,
 }
 
 export function generationLanguageToString(
-  language: KiotaGenerationLanguage
+  language: KiotaGenerationLanguage,
 ): string {
   switch (language) {
     case KiotaGenerationLanguage.CSharp:
@@ -168,7 +162,7 @@ export function generationLanguageToString(
 }
 
 export function parseGenerationLanguage(
-  language: string
+  language: string,
 ): KiotaGenerationLanguage {
   switch (language.toLowerCase()) {
     case "csharp":
@@ -191,7 +185,7 @@ export function parseGenerationLanguage(
       return KiotaGenerationLanguage.HTTP;
     default:
       throw new Error(`unknown language: ${language}`);
-  };
+  }
 }
 
 export const allGenerationLanguages = [
@@ -221,25 +215,23 @@ export enum LogLevel {
 }
 
 export interface LanguageInformation {
-   
   MaturityLevel: MaturityLevel;
-   
+
   Dependencies: LanguageDependency[];
-   
+
   DependencyInstallCommand: string;
-   
+
   ClientNamespaceName: string;
-   
+
   ClientClassName: string;
-   
+
   StructuredMimeTypes: string[];
 }
 export interface LanguageDependency {
-   
   Name: string;
-   
+
   Version: string;
-   
+
   DependencyType: DependencyType;
 }
 export enum MaturityLevel {

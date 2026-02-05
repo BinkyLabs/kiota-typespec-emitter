@@ -5,8 +5,7 @@ import { compile, NodeHost } from "@typespec/compiler";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
-const baseServiceDefinition = 
-`
+const baseServiceDefinition = `
   import "@typespec/http";
 
   using Http;
@@ -53,7 +52,9 @@ const baseServiceDefinition =
 
 describe("hello", () => {
   it("logs an error if no clients are configured", async () => {
-    const [, diagnostics] = await Tester.compileAndDiagnose(baseServiceDefinition);
+    const [, diagnostics] = await Tester.compileAndDiagnose(
+      baseServiceDefinition,
+    );
     strictEqual(diagnostics.length, 1);
     strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
   });
@@ -61,8 +62,20 @@ describe("hello", () => {
   const tmpTspFileName = "temp-service.tsp";
   const tmpDirectory = "test-output";
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
-  const openApiFilePath = path.join(tmpDirectory, "@binkylabs", "kiota-typespec-emitter", "openapi.json");
-  const clientFilePath = path.join(tmpDirectory,"@binkylabs", "kiota-typespec-emitter", "out", "csharp-client", "WidgetClient.cs");
+  const openApiFilePath = path.join(
+    tmpDirectory,
+    "@binkylabs",
+    "kiota-typespec-emitter",
+    "openapi.json",
+  );
+  const clientFilePath = path.join(
+    tmpDirectory,
+    "@binkylabs",
+    "kiota-typespec-emitter",
+    "out",
+    "csharp-client",
+    "WidgetClient.cs",
+  );
   before(async () => {
     await fs.mkdir(tmpDirectory, { recursive: true });
     await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
@@ -88,16 +101,34 @@ describe("hello", () => {
       outputDir: tmpDirectory,
     });
     const diagnostics = program.diagnostics;
-    const resultingOpenApiDescription = await fs.readFile(openApiFilePath, "utf-8");
-    strictEqual(!!resultingOpenApiDescription, true, "Expected openapi.json to be emitted.");
+    const resultingOpenApiDescription = await fs.readFile(
+      openApiFilePath,
+      "utf-8",
+    );
+    strictEqual(
+      !!resultingOpenApiDescription,
+      true,
+      "Expected openapi.json to be emitted.",
+    );
     const openApiDescription = JSON.parse(resultingOpenApiDescription);
     strictEqual(openApiDescription.openapi, "3.2.0");
 
-    const kiotaLogs = diagnostics.filter(d => d.code === "kiota-emitter-log");
-    deepEqual(kiotaLogs, [], "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs));
+    const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
+    deepEqual(
+      kiotaLogs,
+      [],
+      "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs),
+    );
 
-    const errorLogs = diagnostics.filter(d => d.code === "kiota-emitter-generation-failed");
-    deepEqual(errorLogs, [], "Expected no Kiota generation errors, but got: " + JSON.stringify(errorLogs));
+    const errorLogs = diagnostics.filter(
+      (d) => d.code === "kiota-emitter-generation-failed",
+    );
+    deepEqual(
+      errorLogs,
+      [],
+      "Expected no Kiota generation errors, but got: " +
+        JSON.stringify(errorLogs),
+    );
 
     await fs.access(clientFilePath);
   });

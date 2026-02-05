@@ -1,6 +1,14 @@
-import { KiotaLogEntry, MaturityLevel, DependencyType, LogLevel } from './types.js';
+import {
+  KiotaLogEntry,
+  MaturityLevel,
+  DependencyType,
+  LogLevel,
+} from "./types.js";
 
-export function getLogEntriesForLevel(logEntries: KiotaLogEntry[], ...levels: LogLevel[]): KiotaLogEntry[] {
+export function getLogEntriesForLevel(
+  logEntries: KiotaLogEntry[],
+  ...levels: LogLevel[]
+): KiotaLogEntry[] {
   return logEntries.filter((entry) => levels.indexOf(entry.level) !== -1);
 }
 

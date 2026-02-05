@@ -5,7 +5,7 @@ export interface Config {
 
 let config: Config = {
   binaryLocation: "",
-  binaryVersion: ""
+  binaryVersion: "",
 };
 
 export function setKiotaConfig(newConfig: Partial<Config>) {
