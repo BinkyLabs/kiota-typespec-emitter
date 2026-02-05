@@ -59,15 +59,16 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       clientNamespaceName: languageOptions.clientNamespaceName ?? "ApiClientNamespace",
       language: parseGenerationLanguage(clientLanguage),
     });
-    if (!result?.isSuccess) {
+    if (!result) {
       context.program.reportDiagnostic({
         code: "kiota-emitter-generation-failed",
         message: `Kiota client generation failed for language ${clientLanguage}.`,
         target: NoTarget,
         severity: "error",
       });
+      return;
     }
-    result?.logs
+    result.logs
     .filter(logEntry => logEntry.level === LogLevel.error || logEntry.level === LogLevel.warning)
     .forEach(logEntry => {
       context.program.reportDiagnostic({
