@@ -1,6 +1,32 @@
 {
   "name": "@binkylabs/kiota-typespec-emitter",
   "version": "0.1.0",
+  "description": "A client code emitter for TypeSpec that uses kiota to generate the code to call REST APIs",
+  "keywords": [
+    "TypeSpec",
+    "tooling",
+    "kiota",
+    "REST",
+    "OpenAPI",
+    "C#",
+    "Java",
+    "TyeScript",
+    "Go",
+    "PHP",
+    "Python"
+  ],
+  "homepage": "https://github.com/BinkyLabs/kiota-typespec-emitter#readme",
+  "bugs": {
+    "url": "https://github.com/BinkyLabs/kiota-typespec-emitter/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BinkyLabs/kiota-typespec-emitter.git"
+  },
+  "author": "Vincent Biret",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "type": "module",
   "main": "dist/src/index.js",
   "exports": {
@@ -37,7 +63,7 @@
     "format": "prettier .  --write",
     "format:check": "prettier --check ."
   },
-  "private": true,
+  "private": false,
   "packageManager": "npm@11.8.0+sha512.9f5f6c25e5be44629d907a3c482739c614b090a8505057d9685cd273e12c6172e34aa215d2d97bd9a0d8415bb356f7eb6f2b06c1d690b0d2cdcb9f09d7410149",
   "dependencies": {
     "@microsoft/kiota": "^1.30.0",
