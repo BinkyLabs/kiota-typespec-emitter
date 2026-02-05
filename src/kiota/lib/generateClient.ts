@@ -91,7 +91,7 @@ export async function generateClient(clientGenerationOptions: ClientGenerationOp
 
   if (result) {
     return {
-      isSuccess: checkForSuccess(result as KiotaLogEntry[]),
+      isSuccess: checkForSuccess(result),
       logs: result
     };
   }
