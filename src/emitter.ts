@@ -12,6 +12,7 @@ import {
   parseGenerationLanguage,
   LogLevel,
 } from "./kiota/index.js";
+import { dirname } from "node:path";
 
 export type ClientOptions = Omit<
   ClientGenerationOptions,
@@ -19,6 +20,19 @@ export type ClientOptions = Omit<
 >;
 export interface KiotaEmitterOptions {
   clients: Record<string, Partial<ClientOptions>>;
+}
+
+/**
+ * Extracts the root output folder from the emitter-specific directory path.
+ * TypeSpec emitters receive paths like "tsp-output/@scope/package-name",
+ * but we want to output to "tsp-output" directly.
+ */
+function getRootOutputFolder(emitterDir: string): string {
+  // Navigate up two levels: from @scope/package to root
+  // or one level if no scope
+  const parentDir = dirname(emitterDir);
+  const isScoped = dirname(parentDir) !== parentDir && parentDir.includes("@");
+  return isScoped ? dirname(parentDir) : parentDir;
 }
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
@@ -46,6 +60,9 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     });
     return;
   }
+  
+  const rootOutput = getRootOutputFolder(context.emitterOutputDir);
+  
   // create the directory if it doesn't exist
   await openApiOnEmit({
     ...context,
@@ -73,9 +90,9 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
           openAPIFilePath: "openapi.json",
           outputPath:
             languageOptions.outputPath ??
-            resolvePath(context.emitterOutputDir, "kiota-client"),
+            resolvePath(rootOutput, "kiota-client"),
           operation: ConsumerOperation.Generate,
-          workingDirectory: context.emitterOutputDir,
+          workingDirectory: rootOutput,
           clientClassName: languageOptions.clientClassName ?? "ApiClient",
           clientNamespaceName:
             languageOptions.clientNamespaceName ?? "ApiClientNamespace",
