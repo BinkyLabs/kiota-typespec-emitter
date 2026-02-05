@@ -188,4 +188,59 @@ describe("hello", () => {
     await fs.access(additionalClientFilePath);
     await fs.unlink(additionalTmpTspFilePath);
   });
+
+  it("backward compatibility: camelCase configuration still works", async () => {
+    const backwardCompatTmpTspFilePath = path.join(tmpDirectory, "backward-compat-service.tsp");
+    const backwardCompatClientFilePath = path.join(
+      tmpDirectory,
+      "@binkylabs",
+      "kiota-typespec-emitter",
+      "out",
+      "backward-compat-client",
+      "BackwardCompatClient.cs",
+    );
+    
+    await fs.writeFile(backwardCompatTmpTspFilePath, baseServiceDefinition);
+    
+    const program = await compile(NodeHost, backwardCompatTmpTspFilePath, {
+      options: {
+        "@binkylabs/kiota-typespec-emitter": {
+          clients: {
+            csharp: {
+              outputPath: "out/backward-compat-client",
+              clientClassName: "BackwardCompatClient",
+              clientNamespaceName: "BackwardCompat.Client",
+              cleanOutput: true,
+              clearCache: false,
+              includeAdditionalData: true,
+              usesBackingStore: false,
+            },
+          },
+        },
+      },
+      emit: ["@binkylabs/kiota-typespec-emitter"],
+      outputDir: tmpDirectory,
+    });
+    
+    const diagnostics = program.diagnostics;
+    const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
+    deepEqual(
+      kiotaLogs,
+      [],
+      "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs),
+    );
+
+    const errorLogs = diagnostics.filter(
+      (d) => d.code === "kiota-emitter-generation-failed",
+    );
+    deepEqual(
+      errorLogs,
+      [],
+      "Expected no Kiota generation errors, but got: " +
+        JSON.stringify(errorLogs),
+    );
+
+    await fs.access(backwardCompatClientFilePath);
+    await fs.unlink(backwardCompatTmpTspFilePath);
+  });
 });
