@@ -63,5 +63,6 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       clientNamespaceName: languageOptions.clientNamespaceName ?? "ApiClientNamespace",
       language: clientLanguage,
     });
+    //TODO log diagnostics from Kiota generation
   });
 }

@@ -1,6 +1,6 @@
 import { strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { emit, emitWithDiagnostics } from "./test-host.js";
+import { Tester } from "./test-host.js";
 
 const baseServiceDefinition = 
 `
@@ -49,13 +49,27 @@ const baseServiceDefinition =
 
 describe("hello", () => {
   it("logs an error if no clients are configured", async () => {
-    const [, diagnostics] = await emitWithDiagnostics(baseServiceDefinition);
+    const [, diagnostics] = await Tester.compileAndDiagnose(baseServiceDefinition);
     strictEqual(diagnostics.length, 1);
     strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
   });
   it("emit openapi.json", async () => {
-    const results = await emit(baseServiceDefinition);
-    const openApiDescription = JSON.parse(results["openapi.json"]);
+    const result = await Tester.compile(baseServiceDefinition, {
+      compilerOptions: {
+        options: {
+          "@binkylabs/kiota-typespec-emitter": {
+            clients: {
+              csharp: {
+                outputPath: "out/csharp-client",
+                clientClassName: "WidgetClient",
+                clientNamespaceName: "DemoService.Client",
+              },
+            },
+          },
+        },
+      },
+    });
+    const openApiDescription = JSON.parse(result.outputs["openapi.json"]);
     strictEqual(openApiDescription.openapi, "3.2.0");
   });
 });
