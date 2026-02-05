@@ -10,6 +10,7 @@ import runtimeJson from './runtime.json' with { type: 'json' };
 
 const kiotaInstallStatusKey = "kiotaInstallStatus";
 const installDelayInMs = 30000; // 30 seconds
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const state: { [key: string]: any } = {};
 
 let kiotaPath: string | undefined;
@@ -109,7 +110,7 @@ export async function ensureKiotaIsPresentInPath(installPath: string, runtimeDep
             const kiotaFilePath = path.join(installPath, fileName);
             makeExecutable(kiotaFilePath);
           }
-        } catch (error) {
+        } catch {
           fs.rmSync(installPath, { recursive: true, force: true });
           throw new Error("Kiota download failed. Check the logs for more information.");
         }
@@ -169,7 +170,7 @@ function unzipFile(zipFilePath: string, destinationPath: string) {
 
 async function doesFileHashMatch(destinationPath: string, hashValue: string): Promise<boolean> {
   const hash = createHash('sha256');
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     fs.createReadStream(destinationPath).pipe(hash).on('finish', () => {
       const computedValue = hash.digest('hex');
       hash.destroy();
@@ -180,6 +181,7 @@ async function doesFileHashMatch(destinationPath: string, hashValue: string): Pr
 
 function downloadFileFromUrl(url: string, destinationPath: string): Promise<void> {
   return new Promise((resolve) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     https.get(url, (response: any) => {
       if (response.statusCode && response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
         resolve(downloadFileFromUrl(response.headers.location, destinationPath));

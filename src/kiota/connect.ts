@@ -16,6 +16,7 @@ class ReadableStreamWrapper implements rpc.RAL.ReadableStream {
 		return rpc.Disposable.create(() => this.stream.off('close', listener));
 	}
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public onError(listener: (error: any) => void): rpc.Disposable {
 		this.stream.on('error', listener);
 		return rpc.Disposable.create(() => this.stream.off('error', listener));
@@ -42,6 +43,7 @@ class WritableStreamWrapper implements rpc.RAL.WritableStream {
 		return rpc.Disposable.create(() => this.stream.off('close', listener));
 	}
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
 	public onError(listener: (error: any) => void): rpc.Disposable {
 		this.stream.on('error', listener);
 		return rpc.Disposable.create(() => this.stream.off('error', listener));
@@ -89,7 +91,7 @@ export default async function connectToKiota<T>(callback: (connection: rpc.Messa
     cwd: absoluteWorkingDirectory,
     env: {
       ...process.env,
-      // eslint-disable-next-line @typescript-eslint/naming-convention
+       
       KIOTA_CONFIG_PREVIEW: "true",
     }
   });

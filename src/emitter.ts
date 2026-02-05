@@ -2,9 +2,7 @@ import { EmitContext, NoTarget, resolvePath, DiagnosticSeverity } from "@typespe
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
 import { ConsumerOperation, ClientGenerationOptions, generateClient, parseGenerationLanguage, LogLevel } from "./kiota/index.js";
 
-export interface ClientOptions extends Exclude<ClientGenerationOptions, "openApiFilePath" | "operation" | "workingDirectory" | "language"> {
-
-}
+export type ClientOptions = Omit<ClientGenerationOptions, "openApiFilePath" | "operation" | "workingDirectory" | "language">;
 export interface KiotaEmitterOptions {
   clients: Record<string, Partial<ClientOptions>>;
 }
@@ -37,6 +35,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       "file-type": "json",
       "omit-unreachable-types": true,
       "openapi-versions": ["3.2.0"],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any, // the any cast is needed because the versions is internal, remove when https://github.com/microsoft/typespec/pull/9584 is published
   });
 

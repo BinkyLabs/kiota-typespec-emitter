@@ -1,30 +1,30 @@
 export enum KiotaGenerationLanguage {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   CSharp = 0,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Java = 1,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   TypeScript = 2,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   PHP = 3,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Python = 4,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Go = 5,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Ruby = 6,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Dart = 7,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   HTTP = 8,
 }
 
 export enum KiotaPluginType {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   OpenAI = 0,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   ApiManifest = 1,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   ApiPlugin = 2,
 }
 
@@ -91,11 +91,11 @@ export interface KiotaLoggedResult {
 }
 
 export enum OpenApiSpecVersion {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   V2_0 = 0,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   V3_0 = 1,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   V3_1 = 2,
 }
 
@@ -117,26 +117,26 @@ export interface KiotaSearchResult extends KiotaLoggedResult {
   results: Record<string, KiotaSearchResultItem>;
 }
 export interface KiotaSearchResultItem {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Title: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Description: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   ServiceUrl?: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   DescriptionUrl?: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   VersionLabels?: string[];
 }
 
 export enum ConsumerOperation {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Add,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Edit,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Remove,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Generate,
 }
 
@@ -221,25 +221,25 @@ export enum LogLevel {
 }
 
 export interface LanguageInformation {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   MaturityLevel: MaturityLevel;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Dependencies: LanguageDependency[];
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   DependencyInstallCommand: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   ClientNamespaceName: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   ClientClassName: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   StructuredMimeTypes: string[];
 }
 export interface LanguageDependency {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Name: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   Version: string;
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+   
   DependencyType: DependencyType;
 }
 export enum MaturityLevel {
@@ -326,8 +326,6 @@ export interface LanguagesInformation {
 export interface KiotaResult extends KiotaLoggedResult {
   isSuccess: boolean;
 }
-
-export interface ValidateOpenApiResult extends KiotaLoggedResult {}
 
 export interface GeneratePluginResult extends KiotaResult {
   aiPlugin: string;
