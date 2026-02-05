@@ -1,0 +1,60 @@
+name: Update Kiota Runtime
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Run update-runtime script
+        shell: pwsh
+        run: |
+          ./scripts/update-runtime.ps1
+
+      - name: Check for changes
+        id: changes
+        shell: pwsh
+        run: |
+          git diff --quiet src/kiota/runtime.json
+          if ($LASTEXITCODE -ne 0) {
+            echo "has_changes=true" >> $env:GITHUB_OUTPUT
+          } else {
+            echo "has_changes=false" >> $env:GITHUB_OUTPUT
+          }
+
+      - name: Create PR with changes
+        if: steps.changes.outputs.has_changes == 'true'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create and switch to new branch
+          $branch = "update-kiota-runtime-$(Get-Date -Format 'yyyy-MM-dd-HHmmss')"
+          git checkout -b $branch
+          
+          # Stage and commit only runtime.json
+          git add src/kiota/runtime.json
+          git commit -m "feat(emitter): updates kiota version"
+          
+          # Push the branch
+          git push origin $branch
+          
+          # Create pull request and capture the URL
+          $prUrl = gh pr create --title "feat(emitter): updates kiota version" --body "Automated update of Kiota runtime dependencies" --base main --head $branch
+          
+          # Enable auto-merge on the created PR
+          gh pr merge $prUrl --auto --merge -d
