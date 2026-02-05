@@ -51,7 +51,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   await Promise.all(Object.entries(context.options.clients).map(async ([clientLanguage, languageOptions]) => {
     const result = await generateClient({
       ...languageOptions,
-      openAPIFilePath: openApiFilePath,
+      openAPIFilePath: "openapi.json",
       outputPath: languageOptions.outputPath ?? resolvePath(context.emitterOutputDir, "kiota-client"),
       operation: ConsumerOperation.Generate,
       workingDirectory: context.emitterOutputDir,

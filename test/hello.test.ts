@@ -1,6 +1,9 @@
 import { deepEqual, strictEqual } from "node:assert";
-import { describe, it } from "node:test";
+import { describe, it, before } from "node:test";
 import { Tester } from "./test-host.js";
+import { compile, NodeHost } from "@typespec/compiler";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 
 const baseServiceDefinition = 
 `
@@ -53,23 +56,35 @@ describe("hello", () => {
     strictEqual(diagnostics.length, 1);
     strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
   });
+
+  const tmpTspFileName = "temp-service.tsp";
+  const tmpDirectory = "test-output";
+  const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
+  before(async () => {
+    await fs.mkdir(tmpDirectory, { recursive: true });
+    await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
+  });
   it("emit openapi.json", async () => {
-    const [result, diagnostics] = await Tester.compileAndDiagnose(baseServiceDefinition, {
-      compilerOptions: {
-        options: {
-          "@binkylabs/kiota-typespec-emitter": {
-            clients: {
-              csharp: {
-                outputPath: "out/csharp-client",
-                clientClassName: "WidgetClient",
-                clientNamespaceName: "DemoService.Client",
-              },
+    // write the tsp to a temp file under this project
+    const program = await compile(NodeHost, tmpTspFilePath, {
+      options: {
+        "@binkylabs/kiota-typespec-emitter": {
+          clients: {
+            csharp: {
+              outputPath: "out/csharp-client",
+              clientClassName: "WidgetClient",
+              clientNamespaceName: "DemoService.Client",
             },
           },
         },
       },
+      emit: ["@binkylabs/kiota-typespec-emitter"],
+      outputDir: tmpDirectory,
     });
-    const openApiDescription = JSON.parse(result.outputs["openapi.json"]);
+    const diagnostics = program.diagnostics;
+    const resultingOpenApiDescription = await program.host.readFile("@typespec/openapi3/openapi.json");
+    strictEqual(!!resultingOpenApiDescription, true, "Expected openapi.json to be emitted.");
+    const openApiDescription = JSON.parse(resultingOpenApiDescription.text);
     strictEqual(openApiDescription.openapi, "3.2.0");
 
     const kiotaLogs = diagnostics.filter(d => d.code === "kiota-emitter-log");
