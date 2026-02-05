@@ -7,13 +7,13 @@ Welcome to the BinkyLabs Kiota TypeSpec emitter. This emitter allows you to gene
 ### Global installation
 
 ```shell
-npm i -g @binkylabs/kiota-typespec/emitter
+npm i -g @binkylabs/kiota-typespec-emitter
 ```
 
 ### Local install
 
 ```shell
-npm i -D @binkylabs/kiota-typespec/emitter
+npm i -D @binkylabs/kiota-typespec-emitter
 ```
 
 ## Usage
