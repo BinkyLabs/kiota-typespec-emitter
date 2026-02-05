@@ -17,7 +17,8 @@
     "@typespec/compiler": "latest"
   },
   "devDependencies": {
-    "@types/node": "latest",
+    "@types/adm-zip": "^0.5.7",
+    "@types/node": "^25.2.0",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
     "@typespec/compiler": "latest",
@@ -38,6 +39,10 @@
   "packageManager": "npm@11.8.0+sha512.9f5f6c25e5be44629d907a3c482739c614b090a8505057d9685cd273e12c6172e34aa215d2d97bd9a0d8415bb356f7eb6f2b06c1d690b0d2cdcb9f09d7410149",
   "dependencies": {
     "@microsoft/kiota": "^1.30.0",
-    "@typespec/openapi3": "^1.8.0"
+    "@typespec/openapi3": "^1.8.0",
+    "adm-zip": "^0.5.16",
+    "original-fs": "^1.2.0",
+    "uuid": "^13.0.0",
+    "vscode-jsonrpc": "^9.0.0-next.11"
   }
 }

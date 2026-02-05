@@ -1,6 +1,7 @@
 import { EmitContext, emitFile, resolvePath } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
-import { ConsumerOperation, generateClient, KiotaGenerationLanguage } from "@microsoft/kiota";
+// import { ConsumerOperation, generateClient, KiotaGenerationLanguage } from "@microsoft/kiota";
+import { ConsumerOperation, generateClient, KiotaGenerationLanguage } from "./kiota/index.js";
 
 export async function $onEmit(context: EmitContext) {
   await emitFile(context.program, {
