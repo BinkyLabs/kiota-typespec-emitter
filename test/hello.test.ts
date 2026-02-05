@@ -1,4 +1,4 @@
-import { strictEqual } from "node:assert";
+import { deepEqual, strictEqual } from "node:assert";
 import { describe, it } from "node:test";
 import { Tester } from "./test-host.js";
 
@@ -54,7 +54,7 @@ describe("hello", () => {
     strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
   });
   it("emit openapi.json", async () => {
-    const result = await Tester.compile(baseServiceDefinition, {
+    const [result, diagnostics] = await Tester.compileAndDiagnose(baseServiceDefinition, {
       compilerOptions: {
         options: {
           "@binkylabs/kiota-typespec-emitter": {
@@ -71,5 +71,8 @@ describe("hello", () => {
     });
     const openApiDescription = JSON.parse(result.outputs["openapi.json"]);
     strictEqual(openApiDescription.openapi, "3.2.0");
+
+    const kiotaLogs = diagnostics.filter(d => d.code === "kiota-emitter-log");
+    deepEqual(kiotaLogs, []);
   });
 });

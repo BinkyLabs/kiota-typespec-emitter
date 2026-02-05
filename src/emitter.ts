@@ -1,7 +1,6 @@
-import { EmitContext, NoTarget, resolvePath } from "@typespec/compiler";
+import { EmitContext, NoTarget, resolvePath, DiagnosticSeverity } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
-// import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "@microsoft/kiota";
-import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage } from "./kiota/index.js";
+import { ConsumerOperation, ClientGenerationOptions, generateClient, KiotaGenerationLanguage, parseGenerationLanguage, LogLevel } from "./kiota/index.js";
 
 export interface ClientOptions extends Exclude<ClientGenerationOptions, "openApiFilePath" | "operation" | "workingDirectory" | "language"> {
 
@@ -53,7 +52,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
 
   languages.forEach(async clientLanguage => {
     const languageOptions = context.options.clients[clientLanguage];
-    await generateClient({
+    const result = await generateClient({
       ...languageOptions,
       openAPIFilePath: openApiFilePath,
       outputPath: languageOptions.outputPath ?? resolvePath(context.emitterOutputDir, "kiota-client"),
@@ -63,6 +62,32 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       clientNamespaceName: languageOptions.clientNamespaceName ?? "ApiClientNamespace",
       language: clientLanguage,
     });
-    //TODO log diagnostics from Kiota generation
+    if (!result?.isSuccess) {
+      context.program.reportDiagnostic({
+        code: "kiota-emitter-generation-failed",
+        message: `Kiota client generation failed for language ${clientLanguage}.`,
+        target: NoTarget,
+        severity: "error",
+      });
+    }
+    result?.logs
+    .filter(logEntry => logEntry.level === LogLevel.error || logEntry.level === LogLevel.warning)
+    .forEach(logEntry => {
+      context.program.reportDiagnostic({
+        code: "kiota-emitter-log",
+        message: logEntry.message,
+        target: NoTarget,
+        severity: mapKiotaLogLevelToDiagnosticSeverity(logEntry.level as LogLevel.error | LogLevel.warning),
+      });
+    });
   });
+}
+
+function mapKiotaLogLevelToDiagnosticSeverity(level: LogLevel.error | LogLevel.warning): DiagnosticSeverity {
+  switch (level) {
+    case LogLevel.error:
+      return "error";
+    case LogLevel.warning:
+      return "warning";
+  }
 }
