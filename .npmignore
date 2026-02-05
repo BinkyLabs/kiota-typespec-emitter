@@ -1,0 +1,17 @@
+.github/
+.vscode/
+dist/src/kiota/.kiotabin/
+dist/test/
+node_modules/
+scripts/
+src/
+test-output/
+test/
+tsp-output/
+
+*.tgz
+eslint.config.js
+prettierrc.yaml
+release-please-config.json
+tsconfig.json
+.release-please-manifest.json
