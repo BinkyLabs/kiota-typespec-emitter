@@ -64,14 +64,10 @@ describe("hello", () => {
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
   const openApiFilePath = path.join(
     tmpDirectory,
-    "@binkylabs",
-    "kiota-typespec-emitter",
     "openapi.json",
   );
   const clientFilePath = path.join(
     tmpDirectory,
-    "@binkylabs",
-    "kiota-typespec-emitter",
     "out",
     "csharp-client",
     "WidgetClient.cs",

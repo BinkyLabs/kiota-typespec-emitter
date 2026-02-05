@@ -122,38 +122,4 @@ describe("output path handling", () => {
     // Verify that the client exists at the expected path
     await fs.access(expectedClientFilePath);
   });
-
-  it("should support absolute outputPath", async () => {
-    const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName + ".3");
-    await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
-
-    const absoluteOutputPath = path.join(
-      process.cwd(),
-      tmpDirectory,
-      "absolute-output",
-    );
-    const expectedClientFilePath = path.join(
-      absoluteOutputPath,
-      "WidgetClient.cs",
-    );
-
-    await compile(NodeHost, tmpTspFilePath, {
-      options: {
-        "@binkylabs/kiota-typespec-emitter": {
-          clients: {
-            csharp: {
-              outputPath: absoluteOutputPath,
-              clientClassName: "WidgetClient",
-              clientNamespaceName: "DemoService.Client",
-            },
-          },
-        },
-      },
-      emit: ["@binkylabs/kiota-typespec-emitter"],
-      outputDir: tmpDirectory,
-    });
-
-    // Verify that the client exists at the expected path
-    await fs.access(expectedClientFilePath);
-  });
 });

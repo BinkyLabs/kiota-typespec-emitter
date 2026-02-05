@@ -64,8 +64,10 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   const rootOutput = getRootOutputFolder(context.emitterOutputDir);
   
   // create the directory if it doesn't exist
+  // Override the emitterOutputDir in the context to point to root output
   await openApiOnEmit({
     ...context,
+    emitterOutputDir: rootOutput,
     options: {
       "file-type": "json",
       "omit-unreachable-types": true,
@@ -76,7 +78,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
 
   // check that the file was created
   // TODO we need to iterate over the namespaces if multiple OpenApi documents are emitted
-  const openApiFilePath = resolvePath(context.emitterOutputDir, "openapi.json");
+  const openApiFilePath = resolvePath(rootOutput, "openapi.json");
   const openApiFile = await context.program.host.readFile(openApiFilePath);
   if (!openApiFile) {
     throw new Error("OpenAPI file was not emitted, check the logs for errors.");
@@ -85,12 +87,13 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   await Promise.all(
     Object.entries(context.options.clients).map(
       async ([clientLanguage, languageOptions]) => {
+        // Kiota interprets outputPath relative to workingDirectory
+        const kiotaOutputPath = languageOptions.outputPath ?? "kiota-client";
+        
         const result = await generateClient({
           ...languageOptions,
           openAPIFilePath: "openapi.json",
-          outputPath:
-            languageOptions.outputPath ??
-            resolvePath(rootOutput, "kiota-client"),
+          outputPath: kiotaOutputPath,
           operation: ConsumerOperation.Generate,
           workingDirectory: rootOutput,
           clientClassName: languageOptions.clientClassName ?? "ApiClient",
