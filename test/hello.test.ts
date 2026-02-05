@@ -83,16 +83,16 @@ describe("hello", () => {
   after(async () => {
     await fs.rm(tmpDirectory, { recursive: true, force: true });
   });
-  it("emit openapi.json", async () => {
+  it("emit openapi.json with kebab-case configuration", async () => {
     // write the tsp to a temp file under this project
     const program = await compile(NodeHost, tmpTspFilePath, {
       options: {
         "@binkylabs/kiota-typespec-emitter": {
           clients: {
             csharp: {
-              outputPath: "out/csharp-client",
-              clientClassName: "WidgetClient",
-              clientNamespaceName: "DemoService.Client",
+              "output-path": "out/csharp-client",
+              "client-class-name": "WidgetClient",
+              "client-namespace-name": "DemoService.Client",
             },
           },
         },
@@ -131,5 +131,61 @@ describe("hello", () => {
     );
 
     await fs.access(clientFilePath);
+  });
+
+  it("emit openapi.json with additional kebab-case options", async () => {
+    const additionalTmpTspFilePath = path.join(tmpDirectory, "additional-service.tsp");
+    const additionalClientFilePath = path.join(
+      tmpDirectory,
+      "@binkylabs",
+      "kiota-typespec-emitter",
+      "out",
+      "additional-client",
+      "TestClient.cs",
+    );
+    
+    await fs.writeFile(additionalTmpTspFilePath, baseServiceDefinition);
+    
+    const program = await compile(NodeHost, additionalTmpTspFilePath, {
+      options: {
+        "@binkylabs/kiota-typespec-emitter": {
+          clients: {
+            csharp: {
+              "output-path": "out/additional-client",
+              "client-class-name": "TestClient",
+              "client-namespace-name": "Test.Client",
+              "clean-output": true,
+              "clear-cache": false,
+              "include-additional-data": true,
+              "uses-backing-store": false,
+              "exclude-backward-compatible": false,
+            },
+          },
+        },
+      },
+      emit: ["@binkylabs/kiota-typespec-emitter"],
+      outputDir: tmpDirectory,
+    });
+    
+    const diagnostics = program.diagnostics;
+    const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
+    deepEqual(
+      kiotaLogs,
+      [],
+      "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs),
+    );
+
+    const errorLogs = diagnostics.filter(
+      (d) => d.code === "kiota-emitter-generation-failed",
+    );
+    deepEqual(
+      errorLogs,
+      [],
+      "Expected no Kiota generation errors, but got: " +
+        JSON.stringify(errorLogs),
+    );
+
+    await fs.access(additionalClientFilePath);
+    await fs.unlink(additionalTmpTspFilePath);
   });
 });
