@@ -56,7 +56,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: "npm"
       - name: Download artifact
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           name: emitter-package
       - run: npm install npm@11 -g # Use npm@11 to publish with OIDC
