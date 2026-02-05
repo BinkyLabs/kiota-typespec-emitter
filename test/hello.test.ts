@@ -1,5 +1,5 @@
 import { deepEqual, strictEqual } from "node:assert";
-import { describe, it, before } from "node:test";
+import { describe, it, before, after } from "node:test";
 import { Tester } from "./test-host.js";
 import { compile, NodeHost } from "@typespec/compiler";
 import * as fs from "node:fs/promises";
@@ -62,9 +62,13 @@ describe("hello", () => {
   const tmpDirectory = "test-output";
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
   const openApiFilePath = path.join(tmpDirectory, "@binkylabs", "kiota-typespec-emitter", "openapi.json");
+  const clientFilePath = path.join(tmpDirectory,"@binkylabs", "kiota-typespec-emitter", "out", "csharp-client", "WidgetClient.cs");
   before(async () => {
     await fs.mkdir(tmpDirectory, { recursive: true });
     await fs.writeFile(tmpTspFilePath, baseServiceDefinition);
+  });
+  after(async () => {
+    await fs.rm(tmpDirectory, { recursive: true, force: true });
   });
   it("emit openapi.json", async () => {
     // write the tsp to a temp file under this project
@@ -94,5 +98,7 @@ describe("hello", () => {
 
     const errorLogs = diagnostics.filter(d => d.code === "kiota-emitter-generation-failed");
     deepEqual(errorLogs, [], "Expected no Kiota generation errors, but got: " + JSON.stringify(errorLogs));
+
+    await fs.access(clientFilePath);
   });
 });
