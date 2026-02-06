@@ -1,6 +1,6 @@
 {
   "name": "@binkylabs/kiota-typespec-emitter",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A client code emitter for TypeSpec that uses kiota to generate the code to call REST APIs",
   "keywords": [
     "TypeSpec",
