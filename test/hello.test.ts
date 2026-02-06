@@ -62,16 +62,9 @@ describe("hello", () => {
   const tmpTspFileName = "temp-service.tsp";
   const tmpDirectory = "test-output";
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
-  const openApiFilePath = path.join(
-    tmpDirectory,
-    "@binkylabs",
-    "kiota-typespec-emitter",
-    "openapi.json",
-  );
+  const openApiFilePath = path.join(tmpDirectory, "openapi.json");
   const clientFilePath = path.join(
     tmpDirectory,
-    "@binkylabs",
-    "kiota-typespec-emitter",
     "out",
     "csharp-client",
     "WidgetClient.cs",
@@ -133,12 +126,41 @@ describe("hello", () => {
     await fs.access(clientFilePath);
   });
 
+  it("emit client to custom output path", async () => {
+    const customTspFilePath = path.join(tmpDirectory, "custom-service.tsp");
+    await fs.writeFile(customTspFilePath, baseServiceDefinition);
+
+    const customClientFilePath = path.join(
+      tmpDirectory,
+      "kiota-clients",
+      "generated",
+      "WidgetClient.cs",
+    );
+
+    await compile(NodeHost, customTspFilePath, {
+      options: {
+        "@binkylabs/kiota-typespec-emitter": {
+          clients: {
+            csharp: {
+              outputPath: "kiota-clients/generated",
+              clientClassName: "WidgetClient",
+              clientNamespaceName: "DemoService.Client",
+            },
+          },
+        },
+      },
+      emit: ["@binkylabs/kiota-typespec-emitter"],
+      outputDir: tmpDirectory,
+    });
+
+    // Verify that the client exists at the custom path
+    await fs.access(customClientFilePath);
+  });
+
   it("emit openapi.json with additional kebab-case options", async () => {
     const additionalTmpTspFilePath = path.join(tmpDirectory, "additional-service.tsp");
     const additionalClientFilePath = path.join(
       tmpDirectory,
-      "@binkylabs",
-      "kiota-typespec-emitter",
       "out",
       "additional-client",
       "TestClient.cs",
@@ -193,8 +215,6 @@ describe("hello", () => {
     const backwardCompatTmpTspFilePath = path.join(tmpDirectory, "backward-compat-service.tsp");
     const backwardCompatClientFilePath = path.join(
       tmpDirectory,
-      "@binkylabs",
-      "kiota-typespec-emitter",
       "out",
       "backward-compat-client",
       "BackwardCompatClient.cs",

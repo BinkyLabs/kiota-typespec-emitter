@@ -13,6 +13,7 @@ import {
   LogLevel,
 } from "./kiota/index.js";
 import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
+import { dirname } from "node:path";
 
 export type ClientOptions = Omit<
   ClientGenerationOptions,
@@ -20,6 +21,20 @@ export type ClientOptions = Omit<
 >;
 export interface KiotaEmitterOptions {
   clients: Record<string, Partial<ClientOptions>>;
+}
+
+/**
+ * Extracts the root output folder from the emitter-specific directory path.
+ * TypeSpec emitters receive paths like "tsp-output/@scope/package-name",
+ * but we want to output to "tsp-output" directly.
+ */
+function getRootOutputFolder(emitterDir: string): string {
+  const parentDir = dirname(emitterDir);
+  const grandparentDir = dirname(parentDir);
+  // Check if parent directory is a scoped package (starts with @)
+  const parentBasename = parentDir.substring(parentDir.lastIndexOf("/") + 1);
+  const isScoped = parentBasename.startsWith("@");
+  return isScoped ? grandparentDir : parentDir;
 }
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
@@ -47,9 +62,14 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     });
     return;
   }
+
+  const rootOutput = getRootOutputFolder(context.emitterOutputDir);
+
   // create the directory if it doesn't exist
+  // Override the emitterOutputDir in the context to point to root output
   await openApiOnEmit({
     ...context,
+    emitterOutputDir: rootOutput,
     options: {
       "file-type": "json",
       "omit-unreachable-types": true,
@@ -60,7 +80,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
 
   // check that the file was created
   // TODO we need to iterate over the namespaces if multiple OpenApi documents are emitted
-  const openApiFilePath = resolvePath(context.emitterOutputDir, "openapi.json");
+  const openApiFilePath = resolvePath(rootOutput, "openapi.json");
   const openApiFile = await context.program.host.readFile(openApiFilePath);
   if (!openApiFile) {
     throw new Error("OpenAPI file was not emitted, check the logs for errors.");
@@ -74,14 +94,15 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
           languageOptions as Record<string, unknown>,
         ) as Partial<ClientOptions>;
         
+        // Kiota interprets outputPath relative to workingDirectory
+        const kiotaOutputPath = normalizedOptions.outputPath ?? "kiota-client";
+
         const result = await generateClient({
           ...normalizedOptions,
           openAPIFilePath: "openapi.json",
-          outputPath:
-            normalizedOptions.outputPath ??
-            resolvePath(context.emitterOutputDir, "kiota-client"),
+          outputPath: kiotaOutputPath,
           operation: ConsumerOperation.Generate,
-          workingDirectory: context.emitterOutputDir,
+          workingDirectory: rootOutput,
           clientClassName: normalizedOptions.clientClassName ?? "ApiClient",
           clientNamespaceName:
             normalizedOptions.clientNamespaceName ?? "ApiClientNamespace",
