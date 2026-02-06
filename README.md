@@ -27,9 +27,9 @@ options:
   "@binkylabs/kiota-typespec-emitter":
     clients:
       csharp:
-        outputPath: "someOutputPath"
-        clientClassName: "WidgetClient",
-        clientNamespaceName: "DemoService.Client"
+        output-path: "someOutputPath"
+        client-class-name: "WidgetClient"
+        client-namespace-name: "DemoService.Client"
         #...
 ```
 

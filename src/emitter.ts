@@ -12,6 +12,7 @@ import {
   parseGenerationLanguage,
   LogLevel,
 } from "./kiota/index.js";
+import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
 import { dirname } from "node:path";
 
 export type ClientOptions = Omit<
@@ -88,18 +89,23 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   await Promise.all(
     Object.entries(context.options.clients).map(
       async ([clientLanguage, languageOptions]) => {
+        // Convert kebab-case keys to camelCase for internal processing
+        const normalizedOptions = convertKebabToCamel(
+          languageOptions as Record<string, unknown>,
+        ) as Partial<ClientOptions>;
+
         // Kiota interprets outputPath relative to workingDirectory
-        const kiotaOutputPath = languageOptions.outputPath ?? "kiota-client";
+        const kiotaOutputPath = normalizedOptions.outputPath ?? "kiota-client";
 
         const result = await generateClient({
-          ...languageOptions,
+          ...normalizedOptions,
           openAPIFilePath: "openapi.json",
           outputPath: kiotaOutputPath,
           operation: ConsumerOperation.Generate,
           workingDirectory: rootOutput,
-          clientClassName: languageOptions.clientClassName ?? "ApiClient",
+          clientClassName: normalizedOptions.clientClassName ?? "ApiClient",
           clientNamespaceName:
-            languageOptions.clientNamespaceName ?? "ApiClientNamespace",
+            normalizedOptions.clientNamespaceName ?? "ApiClientNamespace",
           language: parseGenerationLanguage(clientLanguage),
         });
         if (!result) {
