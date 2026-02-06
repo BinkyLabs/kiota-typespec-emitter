@@ -61,9 +61,9 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     });
     return;
   }
-  
+
   const rootOutput = getRootOutputFolder(context.emitterOutputDir);
-  
+
   // create the directory if it doesn't exist
   // Override the emitterOutputDir in the context to point to root output
   await openApiOnEmit({
@@ -90,7 +90,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
       async ([clientLanguage, languageOptions]) => {
         // Kiota interprets outputPath relative to workingDirectory
         const kiotaOutputPath = languageOptions.outputPath ?? "kiota-client";
-        
+
         const result = await generateClient({
           ...languageOptions,
           openAPIFilePath: "openapi.json",

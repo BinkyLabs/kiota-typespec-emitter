@@ -28,7 +28,8 @@ describe("getRootOutputFolder", () => {
   });
 
   it("should handle absolute paths with scoped packages", () => {
-    const input = "/home/user/project/tsp-output/@binkylabs/kiota-typespec-emitter";
+    const input =
+      "/home/user/project/tsp-output/@binkylabs/kiota-typespec-emitter";
     const expected = "/home/user/project/tsp-output";
     strictEqual(getRootOutputFolder(input), expected);
   });

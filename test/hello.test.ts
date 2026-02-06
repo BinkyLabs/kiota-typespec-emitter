@@ -62,10 +62,7 @@ describe("hello", () => {
   const tmpTspFileName = "temp-service.tsp";
   const tmpDirectory = "test-output";
   const tmpTspFilePath = path.join(tmpDirectory, tmpTspFileName);
-  const openApiFilePath = path.join(
-    tmpDirectory,
-    "openapi.json",
-  );
+  const openApiFilePath = path.join(tmpDirectory, "openapi.json");
   const clientFilePath = path.join(
     tmpDirectory,
     "out",
