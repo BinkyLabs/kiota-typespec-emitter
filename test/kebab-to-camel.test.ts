@@ -1,6 +1,9 @@
 import { deepEqual, strictEqual } from "node:assert";
 import { describe, it } from "node:test";
-import { kebabToCamel, convertKebabToCamel } from "../src/utils/kebab-to-camel.js";
+import {
+  kebabToCamel,
+  convertKebabToCamel,
+} from "../src/utils/kebab-to-camel.js";
 
 describe("kebab-to-camel utilities", () => {
   describe("kebabToCamel", () => {
@@ -29,7 +32,10 @@ describe("kebab-to-camel utilities", () => {
     });
 
     it("converts include-additional-data to includeAdditionalData", () => {
-      strictEqual(kebabToCamel("include-additional-data"), "includeAdditionalData");
+      strictEqual(
+        kebabToCamel("include-additional-data"),
+        "includeAdditionalData",
+      );
     });
 
     it("converts uses-backing-store to usesBackingStore", () => {
@@ -37,11 +43,17 @@ describe("kebab-to-camel utilities", () => {
     });
 
     it("converts exclude-backward-compatible to excludeBackwardCompatible", () => {
-      strictEqual(kebabToCamel("exclude-backward-compatible"), "excludeBackwardCompatible");
+      strictEqual(
+        kebabToCamel("exclude-backward-compatible"),
+        "excludeBackwardCompatible",
+      );
     });
 
     it("converts disabled-validation-rules to disabledValidationRules", () => {
-      strictEqual(kebabToCamel("disabled-validation-rules"), "disabledValidationRules");
+      strictEqual(
+        kebabToCamel("disabled-validation-rules"),
+        "disabledValidationRules",
+      );
     });
 
     it("converts exclude-patterns to excludePatterns", () => {
@@ -124,7 +136,7 @@ describe("kebab-to-camel utilities", () => {
         "structured-mime-types": ["application/json"],
       };
       const result = convertKebabToCamel(input);
-      
+
       strictEqual(result.clientClassName, "ApiClient");
       strictEqual(result.clientNamespaceName, "ApiClientNamespace");
       strictEqual(result.outputPath, "kiota-client");

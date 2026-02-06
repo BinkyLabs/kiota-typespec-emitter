@@ -93,7 +93,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
         const normalizedOptions = convertKebabToCamel(
           languageOptions as Record<string, unknown>,
         ) as Partial<ClientOptions>;
-        
+
         // Kiota interprets outputPath relative to workingDirectory
         const kiotaOutputPath = normalizedOptions.outputPath ?? "kiota-client";
 

@@ -158,16 +158,19 @@ describe("configuration", () => {
   });
 
   it("emit openapi.json with additional kebab-case options", async () => {
-    const additionalTmpTspFilePath = path.join(tmpDirectory, "additional-service.tsp");
+    const additionalTmpTspFilePath = path.join(
+      tmpDirectory,
+      "additional-service.tsp",
+    );
     const additionalClientFilePath = path.join(
       tmpDirectory,
       "out",
       "additional-client",
       "TestClient.cs",
     );
-    
+
     await fs.writeFile(additionalTmpTspFilePath, baseServiceDefinition);
-    
+
     const program = await compile(NodeHost, additionalTmpTspFilePath, {
       options: {
         "@binkylabs/kiota-typespec-emitter": {
@@ -188,7 +191,7 @@ describe("configuration", () => {
       emit: ["@binkylabs/kiota-typespec-emitter"],
       outputDir: tmpDirectory,
     });
-    
+
     const diagnostics = program.diagnostics;
     const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
     deepEqual(
@@ -212,16 +215,19 @@ describe("configuration", () => {
   });
 
   it("backward compatibility: camelCase configuration still works", async () => {
-    const backwardCompatTmpTspFilePath = path.join(tmpDirectory, "backward-compat-service.tsp");
+    const backwardCompatTmpTspFilePath = path.join(
+      tmpDirectory,
+      "backward-compat-service.tsp",
+    );
     const backwardCompatClientFilePath = path.join(
       tmpDirectory,
       "out",
       "backward-compat-client",
       "BackwardCompatClient.cs",
     );
-    
+
     await fs.writeFile(backwardCompatTmpTspFilePath, baseServiceDefinition);
-    
+
     const program = await compile(NodeHost, backwardCompatTmpTspFilePath, {
       options: {
         "@binkylabs/kiota-typespec-emitter": {
@@ -241,7 +247,7 @@ describe("configuration", () => {
       emit: ["@binkylabs/kiota-typespec-emitter"],
       outputDir: tmpDirectory,
     });
-    
+
     const diagnostics = program.diagnostics;
     const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
     deepEqual(
