@@ -1,2 +1,2 @@
 export { $onEmit } from "./emitter.js";
-export { $lib } from "./lib.js";
+export { $lib, KiotaEmitterOptions, KiotaClientOptions } from "./lib.js";
