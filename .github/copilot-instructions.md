@@ -1,5 +1,10 @@
 # Copilot Instructions
 
+## Commit instructions
+
+- Use conventional commits
+- Run `npm run lint` and `npm run format` before committing to ensure code quality and consistency.
+
 ## Commit Message Format
 
 Always use conventional commits format when creating commits. Follow this structure:
