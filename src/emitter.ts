@@ -14,14 +14,12 @@ import {
 } from "./kiota/index.js";
 import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
 import { dirname } from "node:path";
+import { KiotaEmitterOptions } from "./lib.js";
 
 export type ClientOptions = Omit<
   ClientGenerationOptions,
   "openApiFilePath" | "operation" | "workingDirectory" | "language"
 >;
-export interface KiotaEmitterOptions {
-  clients: Record<string, Partial<ClientOptions>>;
-}
 
 /**
  * Extracts the root output folder from the emitter-specific directory path.
