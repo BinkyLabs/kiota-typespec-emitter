@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.3](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.2...v0.1.3) (2026-02-06)
+
+
+### Features
+
+* **emitter:** use kebab-case for configuration options ([#9](https://github.com/BinkyLabs/kiota-typespec-emitter/issues/9)) ([d9529cd](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/d9529cdd7572436fa3d71d3f41c0a4fb1bcef8fd))
+
+
+### Bug Fixes
+
+* output paths to exclude package name ([#7](https://github.com/BinkyLabs/kiota-typespec-emitter/issues/7)) ([0cc8a67](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/0cc8a6775e259a8a355bef9cd641e2ab5262bf4b))
+
 ## [0.1.2](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.1...v0.1.2) (2026-02-05)
 
 
