@@ -210,10 +210,14 @@ const EmitterOptionsSchema: JSONSchemaType<KiotaEmitterOptions> = {
           },
         },
         required: [],
+        // TypeScript's JSONSchemaType doesn't fully support Record types with additionalProperties.
+        // This cast is necessary and follows the pattern used in official TypeSpec emitters.
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any, // Cast needed for additionalProperties with JSONSchemaType
+      } as any,
+      // TypeScript's JSONSchemaType doesn't fully support Record types.
+      // This cast is necessary and follows the pattern used in official TypeSpec emitters.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any, // Cast needed for Record type
+    } as any,
   },
   required: [],
 };
