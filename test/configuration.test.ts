@@ -50,7 +50,7 @@ const baseServiceDefinition = `
 
 `;
 
-describe("hello", () => {
+describe("configuration", () => {
   it("logs an error if no clients are configured", async () => {
     const [, diagnostics] = await Tester.compileAndDiagnose(
       baseServiceDefinition,
