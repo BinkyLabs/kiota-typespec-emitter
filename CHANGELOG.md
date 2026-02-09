@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.4](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.3...v0.1.4) (2026-02-09)
+
+
+### Bug Fixes
+
+* add funding information ([01a5c10](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/01a5c10d9f8feb4376113db74c90a59dfac06a98))
+* add funding information ([9016794](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/9016794f17db6cff1bceaeb5979ca312eeb3165b))
+
 ## [0.1.3](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.2...v0.1.3) (2026-02-06)
 
 
