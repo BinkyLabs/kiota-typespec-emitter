@@ -42,6 +42,6 @@ export const $lib = createTypeSpecLibrary({
       },
     },
   },
-} as const);
+});
 
 export const { reportDiagnostic, createDiagnostic } = $lib;
