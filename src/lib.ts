@@ -165,7 +165,8 @@ const EmitterOptionsSchema: JSONSchemaType<KiotaEmitterOptions> = {
               type: "array",
               items: { type: "string" },
               nullable: true,
-              description: "Patterns to exclude from generation (glob patterns).",
+              description:
+                "Patterns to exclude from generation (glob patterns).",
             },
             "include-additional-data": {
               type: "boolean",
