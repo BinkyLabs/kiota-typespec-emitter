@@ -56,7 +56,10 @@ describe("configuration", () => {
       baseServiceDefinition,
     );
     strictEqual(diagnostics.length, 1);
-    strictEqual(diagnostics[0].code, "kiota-emitter-no-clients");
+    strictEqual(
+      diagnostics[0].code,
+      "@binkylabs/kiota-typespec-emitter/no-clients",
+    );
   });
 
   const tmpTspFileName = "temp-service.tsp";

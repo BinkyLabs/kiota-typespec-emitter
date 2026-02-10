@@ -1,9 +1,4 @@
-import {
-  EmitContext,
-  NoTarget,
-  resolvePath,
-  DiagnosticSeverity,
-} from "@typespec/compiler";
+import { EmitContext, NoTarget, resolvePath } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
 import {
   ConsumerOperation,
@@ -14,6 +9,7 @@ import {
 } from "./kiota/index.js";
 import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
 import { dirname } from "node:path";
+import { reportDiagnostic } from "./lib.js";
 import { KiotaEmitterOptions } from "./lib.js";
 
 export type ClientOptions = Omit<
@@ -37,13 +33,9 @@ function getRootOutputFolder(emitterDir: string): string {
 
 export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   if (!context.options) {
-    // log an error diagnostic
-    context.program.reportDiagnostic({
-      code: "kiota-emitter-missing-options",
-      message:
-        "Kiota Emitter options are missing. No clients will be generated.",
+    reportDiagnostic(context.program, {
+      code: "missing-options",
       target: NoTarget,
-      severity: "error",
     });
     return;
   }
@@ -51,12 +43,9 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     !context.options.clients ||
     Object.keys(context.options.clients).length === 0
   ) {
-    // log an error diagnostic
-    context.program.reportDiagnostic({
-      code: "kiota-emitter-no-clients",
-      message: "No clients configured for generation in Kiota Emitter options.",
+    reportDiagnostic(context.program, {
+      code: "no-clients",
       target: NoTarget,
-      severity: "error",
     });
     return;
   }
@@ -81,7 +70,11 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   const openApiFilePath = resolvePath(rootOutput, "openapi.json");
   const openApiFile = await context.program.host.readFile(openApiFilePath);
   if (!openApiFile) {
-    throw new Error("OpenAPI file was not emitted, check the logs for errors.");
+    reportDiagnostic(context.program, {
+      code: "openapi-emit-failed",
+      target: NoTarget,
+    });
+    return;
   }
 
   await Promise.all(
@@ -107,11 +100,10 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
           language: parseGenerationLanguage(clientLanguage),
         });
         if (!result) {
-          context.program.reportDiagnostic({
-            code: "kiota-emitter-generation-failed",
-            message: `Kiota client generation failed for language ${clientLanguage}.`,
+          reportDiagnostic(context.program, {
+            code: "generation-failed",
+            format: { language: clientLanguage },
             target: NoTarget,
-            severity: "error",
           });
           return;
         }
@@ -122,27 +114,17 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
               logEntry.level === LogLevel.warning,
           )
           .forEach((logEntry) => {
-            context.program.reportDiagnostic({
-              code: "kiota-emitter-log",
-              message: logEntry.message,
+            const code =
+              logEntry.level === LogLevel.error
+                ? "kiota-error"
+                : "kiota-warning";
+            reportDiagnostic(context.program, {
+              code,
+              format: { message: logEntry.message },
               target: NoTarget,
-              severity: mapKiotaLogLevelToDiagnosticSeverity(
-                logEntry.level as LogLevel.error | LogLevel.warning,
-              ),
             });
           });
       },
     ),
   );
-}
-
-function mapKiotaLogLevelToDiagnosticSeverity(
-  level: LogLevel.error | LogLevel.warning,
-): DiagnosticSeverity {
-  switch (level) {
-    case LogLevel.error:
-      return "error";
-    case LogLevel.warning:
-      return "warning";
-  }
 }
