@@ -120,104 +120,100 @@ const EmitterOptionsSchema: JSONSchemaType<KiotaEmitterOptions> = {
       description:
         "A map of language names to client generation options. The key is the target language (e.g., 'csharp', 'typescript', 'python', 'java', 'go', 'php').",
       required: [],
-      additionalProperties: {
-        type: "object",
-        properties: {
-          "output-path": {
-            type: "string",
-            nullable: true,
-            description:
-              "The output path where the generated client code will be written. This path is relative to the emitter output directory. Default: 'kiota-client'",
+      patternProperties: {
+        "^(csharp|typescript|python|java|go|php|ruby|dart|http)$": {
+          type: "object",
+          properties: {
+            "output-path": {
+              type: "string",
+              nullable: true,
+              description:
+                "The output path where the generated client code will be written. This path is relative to the emitter output directory. Default: 'kiota-client'",
+            },
+            "client-class-name": {
+              type: "string",
+              nullable: true,
+              description:
+                "The name of the client class to generate. Default: 'ApiClient'",
+            },
+            "client-namespace-name": {
+              type: "string",
+              nullable: true,
+              description:
+                "The namespace name for the generated client. Default: 'ApiClientNamespace'",
+            },
+            deserializers: {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description: "List of deserializer modules to include.",
+            },
+            "disabled-validation-rules": {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description:
+                "List of validation rules to disable during generation.",
+            },
+            "exclude-backward-compatible": {
+              type: "boolean",
+              nullable: true,
+              description:
+                "Whether to exclude backward-compatible changes. Default: false",
+            },
+            "exclude-patterns": {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description: "Patterns to exclude from generation (glob patterns).",
+            },
+            "include-additional-data": {
+              type: "boolean",
+              nullable: true,
+              description:
+                "Whether to include additional data in the generated client. Default: false",
+            },
+            "include-patterns": {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description: "Patterns to include in generation (glob patterns).",
+            },
+            "clear-cache": {
+              type: "boolean",
+              nullable: true,
+              description:
+                "Whether to clear the cache before generating the client. Default: false",
+            },
+            "clean-output": {
+              type: "boolean",
+              nullable: true,
+              description:
+                "Whether to clean the output directory before generating the client. Default: false",
+            },
+            serializers: {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description: "List of serializer modules to include.",
+            },
+            "structured-mime-types": {
+              type: "array",
+              items: { type: "string" },
+              nullable: true,
+              description: "List of structured MIME types to support.",
+            },
+            "uses-backing-store": {
+              type: "boolean",
+              nullable: true,
+              description:
+                "Whether the generated client uses a backing store. Default: false",
+            },
           },
-          "client-class-name": {
-            type: "string",
-            nullable: true,
-            description:
-              "The name of the client class to generate. Default: 'ApiClient'",
-          },
-          "client-namespace-name": {
-            type: "string",
-            nullable: true,
-            description:
-              "The namespace name for the generated client. Default: 'ApiClientNamespace'",
-          },
-          deserializers: {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description: "List of deserializer modules to include.",
-          },
-          "disabled-validation-rules": {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description:
-              "List of validation rules to disable during generation.",
-          },
-          "exclude-backward-compatible": {
-            type: "boolean",
-            nullable: true,
-            description:
-              "Whether to exclude backward-compatible changes. Default: false",
-          },
-          "exclude-patterns": {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description: "Patterns to exclude from generation (glob patterns).",
-          },
-          "include-additional-data": {
-            type: "boolean",
-            nullable: true,
-            description:
-              "Whether to include additional data in the generated client. Default: false",
-          },
-          "include-patterns": {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description: "Patterns to include in generation (glob patterns).",
-          },
-          "clear-cache": {
-            type: "boolean",
-            nullable: true,
-            description:
-              "Whether to clear the cache before generating the client. Default: false",
-          },
-          "clean-output": {
-            type: "boolean",
-            nullable: true,
-            description:
-              "Whether to clean the output directory before generating the client. Default: false",
-          },
-          serializers: {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description: "List of serializer modules to include.",
-          },
-          "structured-mime-types": {
-            type: "array",
-            items: { type: "string" },
-            nullable: true,
-            description: "List of structured MIME types to support.",
-          },
-          "uses-backing-store": {
-            type: "boolean",
-            nullable: true,
-            description:
-              "Whether the generated client uses a backing store. Default: false",
-          },
+          required: [],
         },
-        required: [],
-        // TypeScript's JSONSchemaType doesn't fully support Record types with additionalProperties.
-        // This cast is necessary and follows the pattern used in official TypeSpec emitters.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      // TypeScript's JSONSchemaType doesn't fully support Record types.
-      // This cast is necessary and follows the pattern used in official TypeSpec emitters.
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
+      },
+    },
   },
   required: [],
 };
@@ -226,7 +222,7 @@ export const $lib = createTypeSpecLibrary({
   name: "@binkylabs/kiota-typespec-emitter",
   diagnostics: {},
   emitter: {
-    options: EmitterOptionsSchema as JSONSchemaType<KiotaEmitterOptions>,
+    options: EmitterOptionsSchema,
   },
 });
 
