@@ -69,15 +69,18 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   // Check for multiple service files first (openapi.{ServiceName}.json pattern)
   const files = await context.program.host.readDir(rootOutput);
   const openApiPattern = /^openapi\.(.+)\.json$/;
-  const openApiFiles: { fileName: string; serviceName: string | null }[] = files
-    .filter((file) => openApiPattern.test(file))
-    .map((file) => {
-      const match = file.match(openApiPattern);
-      return {
+  const openApiFiles: { fileName: string; serviceName: string | null }[] = [];
+
+  // Find all files matching the multiple services pattern
+  for (const file of files) {
+    const match = file.match(openApiPattern);
+    if (match) {
+      openApiFiles.push({
         fileName: file,
-        serviceName: match ? match[1] : null,
-      };
-    });
+        serviceName: match[1],
+      });
+    }
+  }
 
   // If no multiple service files found, try single openapi.json
   if (openApiFiles.length === 0) {
@@ -126,9 +129,12 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
             language: parseGenerationLanguage(clientLanguage),
           });
           if (!result) {
+            const serviceDesc = openApiFile.serviceName
+              ? `service ${openApiFile.serviceName}`
+              : `single service (${openApiFile.fileName})`;
             reportDiagnostic(context.program, {
               code: "generation-failed",
-              format: { language: clientLanguage, service: openApiFile.serviceName ?? "default" },
+              format: { language: clientLanguage, service: serviceDesc },
               target: NoTarget,
             });
             return;
