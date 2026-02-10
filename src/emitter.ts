@@ -1,4 +1,4 @@
-import { EmitContext, NoTarget, resolvePath } from "@typespec/compiler";
+import { EmitContext, NoTarget } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
 import {
   ConsumerOperation,
@@ -9,8 +9,7 @@ import {
 } from "./kiota/index.js";
 import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
 import { dirname } from "node:path";
-import { reportDiagnostic } from "./lib.js";
-import { KiotaEmitterOptions } from "./lib.js";
+import { reportDiagnostic, KiotaEmitterOptions } from "./lib.js";
 
 export type ClientOptions = Omit<
   ClientGenerationOptions,
@@ -66,38 +65,28 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   });
 
   // check that the file was created
-  // Check for multiple service files first (openapi.{ServiceName}.json pattern)
+  // Match both single service (openapi.json) and multiple services (openapi.{ServiceName}.json)
   const files = await context.program.host.readDir(rootOutput);
-  const openApiPattern = /^openapi\.(.+)\.json$/;
+  const openApiPattern = /^openapi(?:\.(.+))?\.json$/;
   const openApiFiles: { fileName: string; serviceName: string | null }[] = [];
 
-  // Find all files matching the multiple services pattern
+  // Find all files matching the pattern
   for (const file of files) {
     const match = file.match(openApiPattern);
     if (match) {
       openApiFiles.push({
         fileName: file,
-        serviceName: match[1],
+        serviceName: match[1] ?? null,
       });
     }
   }
 
-  // If no multiple service files found, try single openapi.json
   if (openApiFiles.length === 0) {
-    const singleOpenApiFilePath = resolvePath(rootOutput, "openapi.json");
-    const singleOpenApiFile = await context.program.host.readFile(
-      singleOpenApiFilePath,
-    );
-    if (singleOpenApiFile) {
-      // Single service case
-      openApiFiles.push({ fileName: "openapi.json", serviceName: null });
-    } else {
-      reportDiagnostic(context.program, {
-        code: "openapi-emit-failed",
-        target: NoTarget,
-      });
-      return;
-    }
+    reportDiagnostic(context.program, {
+      code: "openapi-emit-failed",
+      target: NoTarget,
+    });
+    return;
   }
 
   // Generate clients for each OpenAPI file and each language
