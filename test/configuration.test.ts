@@ -50,6 +50,40 @@ const baseServiceDefinition = `
 
 `;
 
+const multipleServicesDefinition = `
+  import "@typespec/http";
+
+  using Http;
+
+  @service(#{ title: "Widget Service" })
+  @server("https://widgets.example.com")
+  namespace WidgetService {
+    model Widget {
+      id: string;
+      name: string;
+    }
+
+    @route("/widgets")
+    interface Widgets {
+      @get list(): Widget[];
+    }
+  }
+
+  @service(#{ title: "Gadget Service" })
+  @server("https://gadgets.example.com")
+  namespace GadgetService {
+    model Gadget {
+      id: string;
+      type: string;
+    }
+
+    @route("/gadgets")
+    interface Gadgets {
+      @get list(): Gadget[];
+    }
+  }
+`;
+
 describe("configuration", () => {
   it("logs an error if no clients are configured", async () => {
     const [, diagnostics] = await Tester.compileAndDiagnose(
@@ -271,5 +305,78 @@ describe("configuration", () => {
 
     await fs.access(backwardCompatClientFilePath);
     await fs.unlink(backwardCompatTmpTspFilePath);
+  });
+
+  it("emit multiple clients for multiple services", async () => {
+    const multiServiceTmpTspFilePath = path.join(
+      tmpDirectory,
+      "multi-service.tsp",
+    );
+    const widgetClientFilePath = path.join(
+      tmpDirectory,
+      "out",
+      "widgetservice-client",
+      "ApiClient.cs",
+    );
+    const gadgetClientFilePath = path.join(
+      tmpDirectory,
+      "out",
+      "gadgetservice-client",
+      "ApiClient.cs",
+    );
+    const widgetOpenApiFilePath = path.join(
+      tmpDirectory,
+      "openapi.WidgetService.json",
+    );
+    const gadgetOpenApiFilePath = path.join(
+      tmpDirectory,
+      "openapi.GadgetService.json",
+    );
+
+    await fs.writeFile(multiServiceTmpTspFilePath, multipleServicesDefinition);
+
+    const program = await compile(NodeHost, multiServiceTmpTspFilePath, {
+      options: {
+        "@binkylabs/kiota-typespec-emitter": {
+          clients: {
+            csharp: {
+              "output-path": "out",
+              "client-class-name": "ApiClient",
+              "client-namespace-name": "Client",
+            },
+          },
+        },
+      },
+      emit: ["@binkylabs/kiota-typespec-emitter"],
+      outputDir: tmpDirectory,
+    });
+
+    const diagnostics = program.diagnostics;
+    const kiotaLogs = diagnostics.filter((d) => d.code === "kiota-emitter-log");
+    deepEqual(
+      kiotaLogs,
+      [],
+      "Expected no Kiota logs, but got: " + JSON.stringify(kiotaLogs),
+    );
+
+    const errorLogs = diagnostics.filter(
+      (d) => d.code === "kiota-emitter-generation-failed",
+    );
+    deepEqual(
+      errorLogs,
+      [],
+      "Expected no Kiota generation errors, but got: " +
+        JSON.stringify(errorLogs),
+    );
+
+    // Verify both OpenAPI files were generated
+    await fs.access(widgetOpenApiFilePath);
+    await fs.access(gadgetOpenApiFilePath);
+
+    // Verify both clients were generated
+    await fs.access(widgetClientFilePath);
+    await fs.access(gadgetClientFilePath);
+
+    await fs.unlink(multiServiceTmpTspFilePath);
   });
 });

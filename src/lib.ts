@@ -249,7 +249,7 @@ export const $lib = createTypeSpecLibrary({
     "generation-failed": {
       severity: "error",
       messages: {
-        default: paramMessage`Kiota client generation failed for language ${"language"}.`,
+        default: paramMessage`Kiota client generation failed for language ${"language"} and service ${"service"}.`,
       },
     },
     "kiota-error": {
