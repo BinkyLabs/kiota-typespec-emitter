@@ -136,15 +136,15 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
             )
             .forEach((logEntry) => {
               const code =
-              logEntry.level === LogLevel.error
-                ? "kiota-error"
-                : "kiota-warning";
+                logEntry.level === LogLevel.error
+                  ? "kiota-error"
+                  : "kiota-warning";
               reportDiagnostic(context.program, {
                 code,
                 format: { message: logEntry.message },
                 target: NoTarget,
               });
-          });
+            });
         },
       ),
     ),
