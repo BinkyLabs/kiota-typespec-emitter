@@ -1,4 +1,4 @@
-import { EmitContext, NoTarget, resolvePath } from "@typespec/compiler";
+import { EmitContext, NoTarget } from "@typespec/compiler";
 import { $onEmit as openApiOnEmit } from "@typespec/openapi3";
 import {
   ConsumerOperation,
@@ -9,8 +9,7 @@ import {
 } from "./kiota/index.js";
 import { convertKebabToCamel } from "./utils/kebab-to-camel.js";
 import { dirname } from "node:path";
-import { reportDiagnostic } from "./lib.js";
-import { KiotaEmitterOptions } from "./lib.js";
+import { reportDiagnostic, KiotaEmitterOptions } from "./lib.js";
 
 export type ClientOptions = Omit<
   ClientGenerationOptions,
@@ -66,10 +65,23 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   });
 
   // check that the file was created
-  // TODO we need to iterate over the namespaces if multiple OpenApi documents are emitted
-  const openApiFilePath = resolvePath(rootOutput, "openapi.json");
-  const openApiFile = await context.program.host.readFile(openApiFilePath);
-  if (!openApiFile) {
+  // Match both single service (openapi.json) and multiple services (openapi.{ServiceName}.json)
+  const files = await context.program.host.readDir(rootOutput);
+  const openApiPattern = /^openapi(?:\.(.+))?\.json$/;
+  const openApiFiles: { fileName: string; serviceName: string | null }[] = [];
+
+  // Find all files matching the pattern
+  for (const file of files) {
+    const match = file.match(openApiPattern);
+    if (match) {
+      openApiFiles.push({
+        fileName: file,
+        serviceName: match[1] ?? null,
+      });
+    }
+  }
+
+  if (openApiFiles.length === 0) {
     reportDiagnostic(context.program, {
       code: "openapi-emit-failed",
       target: NoTarget,
@@ -77,54 +89,64 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
     return;
   }
 
+  // Generate clients for each OpenAPI file and each language
   await Promise.all(
-    Object.entries(context.options.clients).map(
-      async ([clientLanguage, languageOptions]) => {
-        // Convert kebab-case keys to camelCase for internal processing
-        const normalizedOptions = convertKebabToCamel(
-          languageOptions as Record<string, unknown>,
-        ) as Partial<ClientOptions>;
+    openApiFiles.flatMap((openApiFile) =>
+      Object.entries(context.options.clients!).map(
+        async ([clientLanguage, languageOptions]) => {
+          // Convert kebab-case keys to camelCase for internal processing
+          const normalizedOptions = convertKebabToCamel(
+            languageOptions as Record<string, unknown>,
+          ) as Partial<ClientOptions>;
 
-        // Kiota interprets outputPath relative to workingDirectory
-        const kiotaOutputPath = normalizedOptions.outputPath ?? "kiota-client";
+          // Kiota interprets outputPath relative to workingDirectory
+          const baseOutputPath = normalizedOptions.outputPath ?? "kiota-client";
+          // For multiple services, append the service name to the output path
+          const kiotaOutputPath = openApiFile.serviceName
+            ? `${baseOutputPath}/${openApiFile.serviceName.toLowerCase()}-client`
+            : baseOutputPath;
 
-        const result = await generateClient({
-          ...normalizedOptions,
-          openAPIFilePath: "openapi.json",
-          outputPath: kiotaOutputPath,
-          operation: ConsumerOperation.Generate,
-          workingDirectory: rootOutput,
-          clientClassName: normalizedOptions.clientClassName ?? "ApiClient",
-          clientNamespaceName:
-            normalizedOptions.clientNamespaceName ?? "ApiClientNamespace",
-          language: parseGenerationLanguage(clientLanguage),
-        });
-        if (!result) {
-          reportDiagnostic(context.program, {
-            code: "generation-failed",
-            format: { language: clientLanguage },
-            target: NoTarget,
+          const result = await generateClient({
+            ...normalizedOptions,
+            openAPIFilePath: openApiFile.fileName,
+            outputPath: kiotaOutputPath,
+            operation: ConsumerOperation.Generate,
+            workingDirectory: rootOutput,
+            clientClassName: normalizedOptions.clientClassName ?? "ApiClient",
+            clientNamespaceName:
+              normalizedOptions.clientNamespaceName ?? "ApiClientNamespace",
+            language: parseGenerationLanguage(clientLanguage),
           });
-          return;
-        }
-        result.logs
-          .filter(
-            (logEntry) =>
-              logEntry.level === LogLevel.error ||
-              logEntry.level === LogLevel.warning,
-          )
-          .forEach((logEntry) => {
-            const code =
-              logEntry.level === LogLevel.error
-                ? "kiota-error"
-                : "kiota-warning";
+          if (!result) {
+            const serviceDesc = openApiFile.serviceName
+              ? `service ${openApiFile.serviceName}`
+              : `single service (${openApiFile.fileName})`;
             reportDiagnostic(context.program, {
-              code,
-              format: { message: logEntry.message },
+              code: "generation-failed",
+              format: { language: clientLanguage, service: serviceDesc },
               target: NoTarget,
             });
-          });
-      },
+            return;
+          }
+          result.logs
+            .filter(
+              (logEntry) =>
+                logEntry.level === LogLevel.error ||
+                logEntry.level === LogLevel.warning,
+            )
+            .forEach((logEntry) => {
+              const code =
+                logEntry.level === LogLevel.error
+                  ? "kiota-error"
+                  : "kiota-warning";
+              reportDiagnostic(context.program, {
+                code,
+                format: { message: logEntry.message },
+                target: NoTarget,
+              });
+            });
+        },
+      ),
     ),
   );
 }
