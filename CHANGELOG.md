@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.5](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.4...v0.1.5) (2026-02-11)
+
+
+### Features
+
+* **emitter:** support multiple clients for multiple OpenAPI descriptions ([ad14539](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/ad1453995dad6c8c53ad30e42ba45d3d196ec2e8))
+
+
+### Bug Fixes
+
+* declare upfront and replace throw with proper reporting ([d028e87](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/d028e87ed47d5c681929f3a116b87ec963323d9e))
+* **diagnostics:** properly declare diagnostics and replace throw with diagnostics ([b03aab1](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/b03aab1e94b2af7d9acdd903de281cd74fb83a49))
+
 ## [0.1.4](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.3...v0.1.4) (2026-02-09)
 
 
