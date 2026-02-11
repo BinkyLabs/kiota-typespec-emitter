@@ -92,7 +92,7 @@ export async function $onEmit(context: EmitContext<KiotaEmitterOptions>) {
   // Generate clients for each OpenAPI file and each language
   await Promise.all(
     openApiFiles.flatMap((openApiFile) =>
-      Object.entries(context.options.clients).map(
+      Object.entries(context.options.clients!).map(
         async ([clientLanguage, languageOptions]) => {
           // Convert kebab-case keys to camelCase for internal processing
           const normalizedOptions = convertKebabToCamel(
