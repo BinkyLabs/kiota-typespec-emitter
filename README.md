@@ -1,5 +1,9 @@
 # Kiota TypeSpec emitter
 
+[![npm version](https://badge.fury.io/js/%40binkylabs%2Fkiota-typespec-emitter.svg)](https://www.npmjs.com/package/@binkylabs/kiota-typespec-emitter)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+[![Build and Test](https://github.com/BinkyLabs/kiota-typespec-emitter/actions/workflows/node.yml/badge.svg?branch=main)](https://github.com/BinkyLabs/kiota-typespec-emitter/actions/workflows/node.yml)
+
 Welcome to the BinkyLabs Kiota TypeSpec emitter. This emitter allows you to generate client code for your APIs defined via TypeSpec using [kiota](https://aka.ms/kiota).
 
 ## Installation
