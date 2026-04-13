@@ -6,15 +6,23 @@ on:
   workflow_dispatch: # Allow manual trigger
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   update-runtime:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.RELEASE_PLEASE_TOKEN_PROVIDER_APP_ID }}
+          private-key: ${{ secrets.RELEASE_PLEASE_TOKEN_PROVIDER_PEM }}
+
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Run update-runtime script
         shell: pwsh
@@ -37,7 +45,7 @@ jobs:
         if: steps.changes.outputs.has_changes == 'true'
         shell: pwsh
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           # Configure git
           git config user.name "github-actions[bot]"
