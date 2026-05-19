@@ -89,9 +89,9 @@ describe("configuration", () => {
     const [, diagnostics] = await Tester.compileAndDiagnose(
       baseServiceDefinition,
     );
-    strictEqual(diagnostics.length, 1);
+    strictEqual(diagnostics.length, 2);
     strictEqual(
-      diagnostics[0].code,
+      diagnostics[1].code,
       "@binkylabs/kiota-typespec-emitter/no-clients",
     );
   });
