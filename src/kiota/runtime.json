@@ -1,33 +1,33 @@
 {
-  "kiotaVersion": "1.32.3",
+  "kiotaVersion": "1.32.4",
   "runtimeDependencies": [
     {
       "platformId": "win-x64",
-      "sha256": "2cc98b51ca1b558dadf62496fcc84c7ac634e5085389fdd9dfd9d58250b559ef"
+      "sha256": "d245af9d96bf1013f29ca94d96ca6bca2b562a2a3cc7d96b688720b286405191"
     },
     {
       "platformId": "win-x86",
-      "sha256": "c67f9d01693c25b64eea23b2fc2f91fa46ca4674233f02421ebc71dbf243014e"
+      "sha256": "dd061779712c6e5b6bb720f2b4aa923e5af2ad251f393f75560b4db2f00e7ee2"
     },
     {
       "platformId": "win-arm64",
-      "sha256": "7c1a5490567c3c479138e0f9ffb79726260af3456667c2625258fa071e39b388"
+      "sha256": "1507660bcb6fc7035a481c7cd3d4927cc657d69c7cfa3d59ebbba0bf9f5d0d2e"
     },
     {
       "platformId": "linux-x64",
-      "sha256": "386262f1a6ad7644687fd70b378bb1e56998b966be43c34933d39bfc2360e536"
+      "sha256": "a7748967fa17a0f8d5fa092891e190240663eb4d2b7cb132af4ab45eedcda92a"
     },
     {
       "platformId": "linux-arm64",
-      "sha256": "63e3b64f52190d1a2b97e79ebfb3ec4ae793ccf60f75887d544a386fa0003f6d"
+      "sha256": "925fa35646a0bb04ce800b9e6e036a5d05d3c2dfe9420371ea27fba8816dc5e7"
     },
     {
       "platformId": "osx-x64",
-      "sha256": "df53c845aa926349b8e2db6ccdc6a1438f4eaf9b114d262925c84b13638efc3c"
+      "sha256": "b5df57d26f03bb8f560e67d9746360683ff96d080129089fc0a1248cdaebb27f"
     },
     {
       "platformId": "osx-arm64",
-      "sha256": "d49068ff8188012bf6bf3ebd31264e849dc033c4691649547a8ae4424e7bf69a"
+      "sha256": "746379d5cefbb875efa775537a480d78065a3932b697207c45131c06188ca856"
     }
   ]
 }
