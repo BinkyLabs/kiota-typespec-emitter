@@ -308,8 +308,7 @@ export interface PluginObjectProperties extends WorkspaceObjectProperties {
 }
 
 export type ClientOrPluginProperties =
-  | ClientObjectProperties
-  | PluginObjectProperties;
+  ClientObjectProperties | PluginObjectProperties;
 
 export interface LanguagesInformation {
   [key: string]: LanguageInformation;
