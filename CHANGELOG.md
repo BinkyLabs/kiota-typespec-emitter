@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.13](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.12...v0.1.13) (2026-07-05)
+
+
+### Features
+
+* **emitter:** updates kiota version ([eca5f61](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/eca5f61194766d077f416b47d6a89568aa16c6e2))
+* **emitter:** updates kiota version ([b962a22](https://github.com/BinkyLabs/kiota-typespec-emitter/commit/b962a2223ee94876c8d5e1681d753876834b4fe5))
+
 ## [0.1.12](https://github.com/BinkyLabs/kiota-typespec-emitter/compare/v0.1.11...v0.1.12) (2026-06-27)
 
 
