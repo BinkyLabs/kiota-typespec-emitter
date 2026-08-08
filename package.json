@@ -56,7 +56,7 @@
     "@typespec/http": "^1.8.0",
     "eslint": "^10.0.3",
     "prettier": "^3.3.3",
-    "typescript": "^6.0.2",
+    "typescript": "^7.0.2",
     "typescript-eslint": "^8.54.0"
   },
   "scripts": {
